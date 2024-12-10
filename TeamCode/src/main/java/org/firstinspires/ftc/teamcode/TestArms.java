@@ -179,7 +179,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 odoMoveX(27);
                 setLinearSlide(1750,0.25);
                 driveByTime(0,2);
-                odoMoveX(-6);
+                //odoMoveX(-6);
                 openClaw();
                 setLinearSlide(5,0.25);
                 setArm(.08,.56); //scoop
@@ -252,7 +252,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         }
 
         public void openClaw() {
-            grabber.setPosition(0.3);
+            grabber.setPosition(0.4);
         }
 
         public void closeClaw() {
@@ -273,10 +273,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             setLinearSlide(1230,0.5);
             setArm(0.35,.75);
             driveByTime(0,2);
-            odoMoveX(27);
-            setLinearSlide(400,0.5);
-            odoMoveX(-20);
+            odoMoveX(24.5);
+            //setLinearSlide(300,0.5);
+            setArm(0.35,1);
+            driveByTime(-.5,.5);
             openClaw();
+            
+
 
 
         }
