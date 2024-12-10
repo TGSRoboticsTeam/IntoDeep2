@@ -156,6 +156,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 while (runtime.seconds() < 30) {
                     odo.update();
                     firstSpecimen();
+                    setLinearSlide(20,0.5);
+                    unfold();
+                    odoMoveY(-25);
+                    headingCorrection(0);
+                    odoMoveY(-27);
+                    headingCorrection(0);
+                    setArm(.08,.56);//scoop
+                    setLinearSlide(0,0.5);
+                    odoMoveX(20);
+
+
 
                 }
                 //hangSpecimen();
@@ -241,7 +252,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         }
 
         public void openClaw() {
-            grabber.setPosition(0.5);
+            grabber.setPosition(0.3);
         }
 
         public void closeClaw() {
@@ -259,13 +270,14 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
         public void firstSpecimen(){
             unfold();
-            setLinearSlide(1000,0.5);
-            setArm(0.35,1.0);
+            setLinearSlide(1230,0.5);
+            setArm(0.35,.75);
             driveByTime(0,2);
             odoMoveX(27);
             setLinearSlide(400,0.5);
-            odoMoveX(-10);
-            driveByTime(0,30);
+            odoMoveX(-20);
+            openClaw();
+
 
         }
 
@@ -391,6 +403,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         public void odoMoveY(double distanceY) {
             double power = .25;
             odo.update();
+            double head = getHeading();
 
             double startY = getODOy();
 
@@ -400,7 +413,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     if ((getODOy() - startY < 10) && (power > .2)) {
                         power *= .9;
                     }
-
+                    odo.update();
+                    double newHeading = getHeading();
+                    if(Math.abs(head-newHeading)>.05){
+                        headingCorrection(head);
+                    }
                     telemetry.addData("ODO y:Move", "\"%.2f, %.2f, %.2f\" ", getODOy(), startY, distanceY);
                     telemetry.update();
 
