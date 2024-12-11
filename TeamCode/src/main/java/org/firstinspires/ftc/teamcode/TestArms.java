@@ -158,14 +158,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     firstSpecimen();
                     setLinearSlide(20,0.5);
                     unfold();
-                    odoMoveY(-25);
-                    headingCorrection(0);
-                    odoMoveY(-27);
-                    headingCorrection(0);
-                    setArm(.08,.56);//scoop
-                    setLinearSlide(0,0.5);
-                    odoMoveX(20);
-
+                    gotoY(-55);
+                    driveByTime(0,30);
 
 
                 }
@@ -246,7 +240,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         }
 
 
+        public void gotoX(double targetX){
+            odo.update();
+            double currentX = getODOx();
+            odoMoveX(targetX-currentX);
 
+        }
+        public void gotoY(double targetY){
+            odo.update();
+            double currentY = getODOx();
+            odoMoveY(targetY-currentY);
+        }
         public void slidesToTop() {
             setLinearSlide(2088,.5);
         }
@@ -276,9 +280,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             odoMoveX(24.5);
             //setLinearSlide(300,0.5);
             setArm(0.35,1);
-            driveByTime(-.5,.5);
+            driveByTime(0,2);
+
+            driveByTime(-.35,.55);
             openClaw();
-            
+            driveByTime(0,2);
+            headingCorrection(0);
+            gotoY(-48);
+            driveByTime(0,30);
+
+
 
 
 
@@ -418,10 +429,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     }
                     odo.update();
                     double newHeading = getHeading();
-                    if(Math.abs(head-newHeading)>.05){
+                    if(Math.abs(head-newHeading)>.03){
                         headingCorrection(head);
                     }
                     telemetry.addData("ODO y:Move", "\"%.2f, %.2f, %.2f\" ", getODOy(), startY, distanceY);
+                    telemetry.addData("ODO y:Move", "\"%.2f, %.2f\" ", newHeading, head);
+
                     telemetry.update();
 
                     leftFrontDrive.setPower(-power);
