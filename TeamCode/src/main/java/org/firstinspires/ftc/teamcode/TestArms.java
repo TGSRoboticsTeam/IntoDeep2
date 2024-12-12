@@ -153,21 +153,23 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
                 runtime.reset();
-                while (runtime.seconds() < 30) {
+                while (runtime.seconds() < 50) {
                     odo.update();
                     firstSpecimen();
                     setLinearSlide(20,0.5);
                     unfold();
                     driveByTime(0,1);
                     gotoX(20);
-                    gotoY(-54);
+                    strafeByTime(-0.5,2);
+                    gotoY(-50);
+                    driveByTime(0,10);
                     setLinearSlide(0,0.5);
                     openClaw();
                     gotoX(30);
                     closeClaw();
                     driveByTime(0,1);
                     setLinearSlide(200,0.5);
-                    gotoX(0);
+                    gotoX(10);
                     headingCorrection(315);
                     driveByTime(0,2);
                     setLinearSlide(2080,0.5);
@@ -340,7 +342,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             telemetry.addData("heading ", "%.2f", getHeading());
             telemetry.update();
             driveByTime(0,0);
-            double power = .25;
+            double power = .15;
             //ccw
             if (odo.getHeading() - radians < 0) {
                 while (odo.getHeading() < radians) {
@@ -355,7 +357,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 }
                 driveByTime(0,0);
             }
-            else if (odo.getHeading() - radians < 0) {
+            else if (odo.getHeading() - radians > 0) {
                 while (odo.getHeading() > radians) {
                     telemetry.addData("heading ", "%.2f", getHeading());
                     telemetry.update();
@@ -419,7 +421,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         }
 
         public void odoMoveY(double distanceY) {
-            double power = .25;
+            double power = .15;
             odo.update();
             double head = getHeading();
 
@@ -433,7 +435,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     }
                     odo.update();
                     double newHeading = getHeading();
-                    if(Math.abs(head-newHeading)>.03){
+                    if(Math.abs(head-newHeading)>.1){
                         headingCorrection(head);
                     }
                     telemetry.addData("ODO y:Move", "\"%.2f, %.2f, %.2f\" ", getODOy(), startY, distanceY);
@@ -490,11 +492,21 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             // Send calculated power to wheels
             //move sideways
             runtime.reset();
-            while (runtime.seconds() < time) {
-                leftFrontDrive.setPower(-power);
-                rightFrontDrive.setPower(power);
-                leftBackDrive.setPower(power);
-                rightBackDrive.setPower(-power);
+            if(power<0) {
+                while (runtime.seconds() < time) {
+                    leftFrontDrive.setPower(-power);
+                    rightFrontDrive.setPower(0.7*power);
+                    leftBackDrive.setPower(0.7*power);
+                    rightBackDrive.setPower(-power);
+                }
+            }
+            if(power>0) {
+                while (runtime.seconds() < time) {
+                    leftFrontDrive.setPower(-power);
+                    rightFrontDrive.setPower(power);
+                    leftBackDrive.setPower(power);
+                    rightBackDrive.setPower(-power);
+                }
             }
 
         }
