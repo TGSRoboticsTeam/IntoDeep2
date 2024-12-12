@@ -38,6 +38,9 @@ public class YaelDriveJr extends LinearOpMode {
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
 
+        Servo rightWhacker = hardwareMap.get(Servo.class, "right_whacker")
+        Servo leftWhacker = hardwareMap.get(Servo.class, "left_whacker")
+
         // Motor Setup
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -85,8 +88,8 @@ public class YaelDriveJr extends LinearOpMode {
 
             boolean toggleGrabber = gamepad2.right_bumper || gamepad2.right_trigger >= 0.1;
 
-            boolean closeGrabber = gamepad2.a;
-            boolean openGrabber = gamepad2.b;
+            boolean shiftForwards = gamepad2.a;
+            boolean shiftBackwards = gamepad2.b;
 
             boolean armPosScoop = gamepad2.dpad_right;
             boolean armPosUp = gamepad2.dpad_up;
@@ -202,6 +205,14 @@ public class YaelDriveJr extends LinearOpMode {
                 justGrabbed = false;
             }
             //*/
+
+            if (shiftForwards) {
+                rightWhacker.setPosition(1);
+                leftWhacker.setPosition(1);
+            }else if (shiftBackwards){
+                rightWhacker.setPosition(0);
+                leftWhacker.setPosition(0);
+            }
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
             telemetry.addData("Pitch (X)", "%.2f", orientation.getPitch(AngleUnit.DEGREES));
