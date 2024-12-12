@@ -158,9 +158,22 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     firstSpecimen();
                     setLinearSlide(20,0.5);
                     unfold();
-                    gotoY(-55);
+                    driveByTime(0,1);
+                    gotoX(20);
+                    gotoY(-54);
+                    setLinearSlide(0,0.5);
+                    openClaw();
+                    gotoX(30);
+                    closeClaw();
+                    driveByTime(0,1);
+                    setLinearSlide(200,0.5);
+                    gotoX(0);
+                    headingCorrection(315);
+                    driveByTime(0,2);
+                    setLinearSlide(2080,0.5);
+                    setArm(.75,.62);
+                    openClaw();
                     driveByTime(0,30);
-
 
                 }
                 //hangSpecimen();
@@ -184,7 +197,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 odoMoveX(10);
                 closeClaw();
                 driveByTime(0,1);
-                headingCorrection(-45);
+                headingCorrection(45);
                 odoMoveX(-10);
                 setArm(.75,.62);
 
@@ -274,25 +287,16 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
         public void firstSpecimen(){
             unfold();
-            setLinearSlide(1230,0.5);
+            setLinearSlide(1250,0.5);
             setArm(0.35,.75);
             driveByTime(0,2);
             odoMoveX(24.5);
             //setLinearSlide(300,0.5);
             setArm(0.35,1);
             driveByTime(0,2);
-
-            driveByTime(-.35,.55);
+            driveByTime(-.5,.5);
             openClaw();
             driveByTime(0,2);
-            headingCorrection(0);
-            gotoY(-48);
-            driveByTime(0,30);
-
-
-
-
-
         }
 
         //Routine for placing a specimein if it is already in the claw and you are at the bar
@@ -449,6 +453,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 while (getODOy() - startY > distanceY) {
                     if ((getODOy() - startY > 5) && (power > .2)) {
                         power *= .9;
+                    }
+                    odo.update();
+                    double newHeading = getHeading();
+                    if(Math.abs(head-newHeading)>.03){
+                        headingCorrection(head);
                     }
 
                     telemetry.addData("ODO Y:Move", "\"%.2f, %.2f, %.2f\" ", getODOy(), startY, distanceY);
