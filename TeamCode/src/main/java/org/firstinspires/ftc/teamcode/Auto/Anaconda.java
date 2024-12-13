@@ -160,15 +160,15 @@
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
                     driveByTime(0,0);;
-                    strafeByTime(-0.5,1.25);
+                    strafeByTime(-0.5,1.35);
                     odo.resetPosAndIMU();
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
                     setLinearSlide(20,0.5);
                     openClaw();
-                    gotoX(35);
+                    gotoX(37);
                     closeClaw();
-                    driveByTime(0,2);
+                    driveByTime(0,1);
                     setLinearSlide(400,0.75);
                     gotoX(15);
                     bestRotateByTime(0.2,0.1);
@@ -181,10 +181,19 @@
                     driveByTime(.15,.2);
                     openClaw();
                     driveByTime(0,0.2);//Sample dropped
-                    driveByTime(.5,.5);
+                    //get to park
+                    driveByTime(.5,.25);
+
                     setLinearSlide(20,0.3);
                     setArm(0.55,1.0);
-                    bestRotateByTime(-0.2,0.1);
+                    strafeByTime(0.5,0.5);
+                    driveByTime(.5,.25);
+
+                    driveByTime(0,30);
+                    bestRotateByTime(-0.1,0.1);
+
+
+
                     driveByTime(.5,0.75);
                     bestRotateByTime(0.4,0.1);
                     setArm(0.55,1.0);
