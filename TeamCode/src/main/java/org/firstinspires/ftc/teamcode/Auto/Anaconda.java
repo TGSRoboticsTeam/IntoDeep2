@@ -152,6 +152,9 @@
                 runtime.reset();
                 while (runtime.seconds() < 50) {
                     odo.update();
+                    hang.setPower(1);
+                    driveByTime(0,2);
+                    hang.setPower(0);
                     firstSpecimen(); //takes 6 seconds and resets
                     driveByTime(-.5,.65);
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
@@ -186,6 +189,7 @@
                     bestRotateByTime(0.4,0.1);
                     setArm(0.55,1.0);
                     driveByTime(0.1,3);
+                    setLinearSlide(0,0.3);
 
 
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
