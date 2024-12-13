@@ -28,17 +28,17 @@
      * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      */
 
-package org.firstinspires.ftc.teamcode.Auto;
+    package org.firstinspires.ftc.teamcode.Auto;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
+    import com.acmerobotics.dashboard.FtcDashboard;
+    import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+    import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+    import com.qualcomm.robotcore.hardware.DcMotor;
+    import com.qualcomm.robotcore.hardware.DcMotorSimple;
+    import com.qualcomm.robotcore.hardware.Servo;
+    import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+    import org.firstinspires.ftc.robotcore.external.Telemetry;
 
     /*
      * This file contains an example of a Linear "OpMode".
@@ -68,9 +68,9 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
      * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
      */
 
-    @Autonomous(name="TestArms", group="Linear OpMode")
+    @Autonomous(name="anacondra", group="Linear OpMode")
 //@Disabled
-    public class TestArms extends LinearOpMode {
+    public class anacondra extends LinearOpMode {
 
         // Declare OpMode members for each of the 4 motors.
         private ElapsedTime runtime = new ElapsedTime();
@@ -142,15 +142,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             while (opModeIsActive()) {
                 // odo.update();
 
-               // telemetry.addData("LS: ", "%d ", linearSlide.getCurrentPosition());
-               // telemetry.update();
+                // telemetry.addData("LS: ", "%d ", linearSlide.getCurrentPosition());
+                // telemetry.update();
                 odo.update();
                 telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
                 telemetry.update();
-
-
-
-                // driveByTime(0, 20);
 
 
                 runtime.reset();
@@ -160,37 +156,19 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     driveByTime(-.5,.65);
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
-                    driveByTime(0,0);
-                    //unfold(); //
-                    //setLinearSlide(100,0.75); //
-                    //gotoX(20); //gets to where first specimen ends
-                    //gotoY(-50);
+                    driveByTime(0,0);;
                     strafeByTime(-0.5,1.25);
                     odo.resetPosAndIMU();
-
-                    //gotoY(-35);
-                    //headingCorrection(0);
-                    //gotoY(-35);
-                    //headingCorrection(0);
-                    //odoMoveY(-20);
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
-                    //driveByTime(0,5);
-                    //
-                    //headingCorrection(90);
                     setLinearSlide(20,0.5);
                     openClaw();
                     gotoX(35);
-                    //odoMoveX(35);
                     closeClaw();
                     driveByTime(0,2);
-                    //headingCorrection(0);
-
                     setLinearSlide(400,0.75);
                     gotoX(15);
                     bestRotateByTime(0.2,0.1);
-                    //headingCorrection(-45);
-                    //driveByTime(0,2);
                     setLinearSlide(2080,0.75);
                     setArm(.75,.62);
                     driveByTime(0,2);
@@ -199,8 +177,17 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     setArm(.75,.8);
                     driveByTime(.15,.2);
                     openClaw();
-                    driveByTime(0,0.2);
-                    driveByTime(.5,1);
+                    driveByTime(0,0.2);//Sample dropped
+                    driveByTime(.5,.5);
+                    setLinearSlide(20,0.3);
+                    setArm(0.55,1.0);
+                    bestRotateByTime(-0.2,0.1);
+                    driveByTime(.5,0.75);
+                    bestRotateByTime(0.4,0.1);
+                    setArm(0.55,1.0);
+                    driveByTime(0.1,3);
+
+
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
                     driveByTime(0,30);
@@ -233,12 +220,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 
 
-               // setLinearSlide(1500,0.25);
+                // setLinearSlide(1500,0.25);
                 //driveByTime(0,2);
                 //setLinearSlide(0,0.25);
-               // driveByTime(0,5);
+                // driveByTime(0,5);
 
-              //  hangSpecimen();
+                //  hangSpecimen();
 
 
             }
@@ -463,13 +450,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             if (distanceY > 0) {
                 while (getODOy() - startY < distanceY) {
                     /**if ((getODOy() - startY < 10) && (power > .2)) {
-                        power *= .9;
-                    }**/
+                     power *= .9;
+                     }**/
                     odo.update();
                     /**double newHeading = getHeading();
-                    if(Math.abs(head-newHeading)>.2){
-                        headingCorrection(head);
-                    }**/
+                     if(Math.abs(head-newHeading)>.2){
+                     headingCorrection(head);
+                     }**/
                     telemetry.addData("ODO y:Move", "\"%.2f, %.2f, %.2f\" ", getODOy(), startY, distanceY);
                     //telemetry.addData("ODO y:Move", "\"%.2f, %.2f\" ", newHeading, head);
 
@@ -486,13 +473,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             else if (distanceY < 0.0) { //-Y
                 while (getODOy() - startY > distanceY) {
                     /**if ((getODOy() - startY > 5) && (power > .2)) {
-                        power *= .9;
-                    }**/
+                     power *= .9;
+                     }**/
                     odo.update();
                     /**double newHeading = getHeading();
-                    if(Math.abs(head-newHeading)>.2){
-                        headingCorrection(head);
-                    }**/
+                     if(Math.abs(head-newHeading)>.2){
+                     headingCorrection(head);
+                     }**/
 
                     telemetry.addData("ODO Y:Move", "\"%.2f, %.2f, %.2f\" ", getODOy(), startY, distanceY);
                     telemetry.addData("ODO Y heading", "%.2f",  getHeading());
