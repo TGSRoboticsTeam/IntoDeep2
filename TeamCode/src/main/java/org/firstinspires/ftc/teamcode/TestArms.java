@@ -85,6 +85,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         private DcMotor hang = null;
         private GoBildaPinpointDriver odo = null;
         private double heading;
+        double adjustment = 0.7;
 
         @Override
         public void runOpMode() {
@@ -155,24 +156,25 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 runtime.reset();
                 while (runtime.seconds() < 50) {
                     odo.update();
-                    firstSpecimen();
-                    setLinearSlide(20,0.75);
-                    unfold();
-                    driveByTime(0,1);
-                    gotoX(20);
-                    //strafeByTime(-0.5,2);
-                    gotoY(-50);
-                    driveByTime(0,10);
+                    //firstSpecimen(); //takes 6 seconds and resets
+                    unfold(); //
+                    setLinearSlide(100,0.75); //
+                    gotoX(20); //gets to where first specimen ends
+                    //gotoY(-50);
+                    strafeByTime(-0.5,1);
+                    //headingCorrection(90);
+                    gotoX(3);
                     setLinearSlide(0,0.5);
                     openClaw();
-                    gotoX(30);
+                    headingCorrection(0);
+                    odoMoveX(15);
                     closeClaw();
-                    driveByTime(0,1);
-                    setLinearSlide(200,0.5);
+                    driveByTime(0,5);
+                    setLinearSlide(400,0.75);
                     gotoX(10);
                     headingCorrection(315);
                     driveByTime(0,2);
-                    setLinearSlide(2080,0.5);
+                    setLinearSlide(2080,0.75);
                     setArm(.75,.62);
                     openClaw();
                     driveByTime(0,30);
@@ -266,6 +268,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             double currentY = getODOy();
             odoMoveY(targetY-currentY);
         }
+
         public void slidesToTop() {
             setLinearSlide(2088,.5);
         }
@@ -291,14 +294,18 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             unfold();
             setLinearSlide(1250,0.5);
             setArm(0.35,.75);
-            driveByTime(0,2);
+            driveByTime(0,0.5);
             odoMoveX(24.5);
             //setLinearSlide(300,0.5);
             setArm(0.35,1);
-            driveByTime(0,2);
+            driveByTime(0,0.5);
             driveByTime(-.5,.5);
             openClaw();
-            driveByTime(0,2);
+            driveByTime(0,0.5);
+            setLinearSlide(100,0.75);
+            unfold();
+            driveByTime(0,0.5);
+            gotoX(20);
         }
 
         //Routine for placing a specimein if it is already in the claw and you are at the bar
@@ -342,7 +349,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
             telemetry.addData("heading ", "%.2f", getHeading());
             telemetry.update();
             driveByTime(0,0);
-            double power = .15;
+            double power = .25;
             //ccw
             if (odo.getHeading() - radians < 0) {
                 while (odo.getHeading() < radians) {
@@ -443,10 +450,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
                     telemetry.update();
 
-                    leftFrontDrive.setPower(-power);
+                    leftFrontDrive.setPower(adjustment * -power);
                     rightFrontDrive.setPower(power);
                     leftBackDrive.setPower(power);
-                    rightBackDrive.setPower(-power);
+                    rightBackDrive.setPower(adjustment * -power);
 
                     odo.update();
                 }
@@ -466,8 +473,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     telemetry.update();
 
                     leftFrontDrive.setPower(power);
-                    rightFrontDrive.setPower(-power);
-                    leftBackDrive.setPower(-power);
+                    rightFrontDrive.setPower(adjustment * -power);
+                    leftBackDrive.setPower(adjustment * -power);
                     rightBackDrive.setPower(power);
                     odo.update();
                 }
@@ -491,21 +498,22 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         public void strafeByTime(double power, double time) {
             // Send calculated power to wheels
             //move sideways
+
             runtime.reset();
             if(power<0) {
                 while (runtime.seconds() < time) {
-                    leftFrontDrive.setPower(-power);
-                    rightFrontDrive.setPower(0.7*power);
-                    leftBackDrive.setPower(0.7*power);
-                    rightBackDrive.setPower(-power);
+                    leftFrontDrive.setPower(adjustment* -power);
+                    rightFrontDrive.setPower(power);
+                    leftBackDrive.setPower(power);
+                    rightBackDrive.setPower(adjustment*-power);
                 }
             }
             if(power>0) {
                 while (runtime.seconds() < time) {
-                    leftFrontDrive.setPower(-power);
-                    rightFrontDrive.setPower(power);
-                    leftBackDrive.setPower(power);
-                    rightBackDrive.setPower(-power);
+                    leftFrontDrive.setPower(power);
+                    rightFrontDrive.setPower(adjustment*-power);
+                    leftBackDrive.setPower(adjustment*-power);
+                    rightBackDrive.setPower(power);
                 }
             }
 
