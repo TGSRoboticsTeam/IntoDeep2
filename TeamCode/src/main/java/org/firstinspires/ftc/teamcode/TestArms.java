@@ -156,11 +156,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                 while (runtime.seconds() < 50) {
                     odo.update();
                     firstSpecimen();
-                    setLinearSlide(20,0.5);
+                    setLinearSlide(20,0.75);
                     unfold();
                     driveByTime(0,1);
                     gotoX(20);
-                    strafeByTime(-0.5,2);
+                    //strafeByTime(-0.5,2);
                     gotoY(-50);
                     driveByTime(0,10);
                     setLinearSlide(0,0.5);
@@ -263,7 +263,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
         }
         public void gotoY(double targetY){
             odo.update();
-            double currentY = getODOx();
+            double currentY = getODOy();
             odoMoveY(targetY-currentY);
         }
         public void slidesToTop() {
@@ -458,7 +458,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
                     }
                     odo.update();
                     double newHeading = getHeading();
-                    if(Math.abs(head-newHeading)>.03){
+                    if(Math.abs(head-newHeading)>.05){
                         headingCorrection(head);
                     }
 
