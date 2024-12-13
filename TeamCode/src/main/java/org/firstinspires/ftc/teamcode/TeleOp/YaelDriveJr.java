@@ -6,6 +6,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -36,8 +37,8 @@ public class YaelDriveJr extends LinearOpMode {
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
 
-        Servo rightWhacker = hardwareMap.get(Servo.class, "right_whacker");
-        Servo leftWhacker = hardwareMap.get(Servo.class, "left_whacker");
+        CRServo rightWhacker = hardwareMap.get(CRServo.class, "right_whacker");
+        CRServo leftWhacker = hardwareMap.get(CRServo.class, "left_whacker");
 
         // Motor Setup
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
@@ -205,11 +206,11 @@ public class YaelDriveJr extends LinearOpMode {
             //*/
 
             if (shiftForwards) {
-                rightWhacker.setPosition(1);
-                leftWhacker.setPosition(1);
+                rightWhacker.setPower(1);
+                leftWhacker.setPower(1);
             }else if (shiftBackwards){
-                rightWhacker.setPosition(0);
-                leftWhacker.setPosition(0);
+                rightWhacker.setPower(-1);
+                leftWhacker.setPower(-1);
             }
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
