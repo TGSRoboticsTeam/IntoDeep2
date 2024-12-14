@@ -182,13 +182,12 @@
                     openClaw();
                     driveByTime(0,0.2);//Sample dropped
                     //get to park
-                    driveByTime(.5,.25);
-
-                    setLinearSlide(20,0.3);
+                    driveByTime(.25,.125);
+                    driveByTime(0,0);
+                    setLinearSlide(20,.6);
                     setArm(0.55,1.0);
-                    strafeByTime(0.5,0.5);
-                    driveByTime(.5,.25);
-
+                    strafeByTime(0.5,0.75);
+                    driveByTime(.5,.375);
                     driveByTime(0,30);
                     bestRotateByTime(-0.1,0.1);
 
