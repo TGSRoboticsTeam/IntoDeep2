@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -14,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 //For FLL scrimmage
 //@Disabled
-@TeleOp(name = "YaelDriveJr", group = "YaelDriveJr")
+@TeleOp(name = "LonelyDrive", group = "LonelyDrive")
 
-public class OneDriveJr extends LinearOpMode {
+public class LonelyDrive extends LinearOpMode {
 
     double moveSlide = 0;
     double moveHang = 0;

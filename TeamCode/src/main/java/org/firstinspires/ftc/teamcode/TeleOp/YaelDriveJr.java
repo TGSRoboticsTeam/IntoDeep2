@@ -205,15 +205,20 @@ public class YaelDriveJr extends LinearOpMode {
             }
             //*/
 
+            int whackerPower = 1;
             if (shiftForwards) {
-                rightWhacker.setPower(1);
-                leftWhacker.setPower(1);
+                rightWhacker.setPower(whackerPower);
+                leftWhacker.setPower(-whackerPower);
             }else if (shiftBackwards){
-                rightWhacker.setPower(-1);
-                leftWhacker.setPower(-1);
+                rightWhacker.setPower(-whackerPower);
+                leftWhacker.setPower(whackerPower);
+            }else{
+                rightWhacker.setPower(0);
+                leftWhacker.setPower(0);
             }
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            telemetry.addData("moveHang:", "%.2f", moveHang);
             telemetry.addData("Pitch (X)", "%.2f", orientation.getPitch(AngleUnit.DEGREES));
             telemetry.addData("Roll (Y)", "%.2f", orientation.getRoll(AngleUnit.DEGREES));
             telemetry.addData("Yaw (Z)", "%.2f", orientation.getYaw(AngleUnit.DEGREES));

@@ -68,9 +68,9 @@
      * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
      */
 
-    @Autonomous(name="Anaconda", group="Linear OpMode")
+    @Autonomous(name="RightSide", group="Linear OpMode")
 //@Disabled
-    public class Anaconda extends LinearOpMode {
+    public class RightSide extends LinearOpMode {
 
         // Declare OpMode members for each of the 4 motors.
         private ElapsedTime runtime = new ElapsedTime();
