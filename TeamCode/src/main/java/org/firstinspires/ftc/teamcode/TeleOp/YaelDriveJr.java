@@ -218,6 +218,7 @@ public class YaelDriveJr extends LinearOpMode {
             }
 
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            telemetry.addData("moveHang:", "%.2f", moveHang);
             telemetry.addData("Pitch (X)", "%.2f", orientation.getPitch(AngleUnit.DEGREES));
             telemetry.addData("Roll (Y)", "%.2f", orientation.getRoll(AngleUnit.DEGREES));
             telemetry.addData("Yaw (Z)", "%.2f", orientation.getYaw(AngleUnit.DEGREES));
