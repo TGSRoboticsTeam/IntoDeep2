@@ -152,15 +152,20 @@
                 runtime.reset();
                 while (runtime.seconds() < 50) {
                     odo.update();
-                    hang.setPower(1);
-                    driveByTime(0,2);
-                    hang.setPower(0);
+                    //hang.setPower(1);
+                    //driveByTime(0,2);
+                    //hang.setPower(0);
                     firstSpecimen(); //takes 6 seconds and resets
-                    driveByTime(-.5,.65);
+                    gotoX(20);
+                    //driveByTime(-.5,.65);
+                    odoMoveY(40);
+                    odoMoveX(20);
+                    odoMoveY(15);
+                    gotoX(0);
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
-                    driveByTime(0,0);;
-                    strafeByTime(0.5,1.45);
+                    //driveByTime(0,0);;
+                    //strafeByTime(0.6,2);
                     odo.resetPosAndIMU();
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();

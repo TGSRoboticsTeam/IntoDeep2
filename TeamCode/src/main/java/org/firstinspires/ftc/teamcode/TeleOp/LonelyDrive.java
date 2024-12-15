@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -17,9 +19,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 @TeleOp(name = "LonelyDrive", group = "LonelyDrive")
 
 public class LonelyDrive extends LinearOpMode {
-
     double moveSlide = 0;
     double moveHang = 0;
+
+    @Override
     public void runOpMode() {
         //GamepadEx gamepadEx = new GamepadEx(gamepad2); // probably not needed...
         DcMotor hang = hardwareMap.get(DcMotor.class, "hang");
@@ -36,6 +39,9 @@ public class LonelyDrive extends LinearOpMode {
         Servo armServo = hardwareMap.get(Servo.class, "arm_servo");
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
+
+        CRServo rightWhacker = hardwareMap.get(CRServo.class, "right_whacker");
+        CRServo leftWhacker = hardwareMap.get(CRServo.class, "left_whacker");
 
         // Motor Setup
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
@@ -61,18 +67,6 @@ public class LonelyDrive extends LinearOpMode {
 
         double changeInSpeed = 0.35;
         boolean justGrabbed = false;
-/**
-        if(gamepad1.left_trigger>0.1) {
-            moveSlide = gamepad1.left_trigger;
-        }
-        else if(gamepad1.right_trigger>0.1) {
-            moveSlide = -gamepad1.right_trigger;
-        }
-        else {
-            moveSlide = 0;
-        }
-
-**/
         //String returnArmPos = "awaiting input...";
 
         // Retrieve the IMU from the hardware map
@@ -90,34 +84,32 @@ public class LonelyDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Define joystick controls
-            double moveSlide = -gamepad1.right_stick_y;
-
             //double moveSlide = gamepad2.left_trigger - gamepad2.right_trigger;
-           // double moveSlide = -gamepad2.right_stick_y;
-           // double moveHang = -gamepad2.left_stick_y;
+            double moveSlide = -gamepad2.right_stick_y;
+            double moveHang = -gamepad2.left_stick_y;
 
-           boolean toggleGrabber = gamepad1.right_bumper ;
+            boolean toggleGrabber = gamepad2.right_bumper || gamepad2.right_trigger >= 0.1;
 
-            boolean closeGrabber = gamepad1.a;
-            boolean openGrabber = gamepad1.b;
+            boolean shiftForwards = gamepad2.a;
+            boolean shiftBackwards = gamepad2.b;
 
-            boolean armPosScoop = gamepad1.dpad_right;
-            boolean armPosUp = gamepad1.dpad_up;
-            boolean armPosBack = gamepad1.dpad_left;
-            boolean armPosDown = gamepad1.dpad_down;
+            boolean armPosScoop = gamepad2.dpad_right;
+            boolean armPosUp = gamepad2.dpad_up;
+            boolean armPosBack = gamepad2.dpad_left;
+            boolean armPosDown = gamepad2.dpad_down;
 
             // Drive
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rot = gamepad1.right_stick_x;
 
-            boolean slowDown = gamepad1.left_bumper || gamepad1.right_trigger > 0.1;
+            boolean slowDown = gamepad1.right_bumper || gamepad1.right_trigger > 0.1;
 
-            if (gamepad1.x && linearSlide.getCurrentPosition() <= 295) {// && moveSlide < 0.1) {
+            if (gamepad2.left_bumper && linearSlide.getCurrentPosition() <= 295) {// && moveSlide < 0.1) {
                 linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
-            if (gamepad1.y) {
+            if (gamepad1.dpad_up) {
                 imu.resetYaw();
             }
 
@@ -216,7 +208,20 @@ public class LonelyDrive extends LinearOpMode {
             }
             //*/
 
+            int whackerPower = 1;
+            if (shiftForwards) {
+                rightWhacker.setPower(whackerPower);
+                leftWhacker.setPower(-whackerPower);
+            }else if (shiftBackwards){
+                rightWhacker.setPower(-whackerPower);
+                leftWhacker.setPower(whackerPower);
+            }else{
+                rightWhacker.setPower(0);
+                leftWhacker.setPower(0);
+            }
+
             YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            telemetry.addData("moveHang:", "%.2f", moveHang);
             telemetry.addData("Pitch (X)", "%.2f", orientation.getPitch(AngleUnit.DEGREES));
             telemetry.addData("Roll (Y)", "%.2f", orientation.getRoll(AngleUnit.DEGREES));
             telemetry.addData("Yaw (Z)", "%.2f", orientation.getYaw(AngleUnit.DEGREES));

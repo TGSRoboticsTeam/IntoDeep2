@@ -38,6 +38,7 @@
     import com.qualcomm.robotcore.hardware.Servo;
     import com.qualcomm.robotcore.util.ElapsedTime;
 
+
     import org.firstinspires.ftc.robotcore.external.Telemetry;
 
     /*
@@ -160,44 +161,43 @@
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
                     driveByTime(0,0);;
-                    strafeByTime(-0.5,1.35);
+                    strafeByTime(-0.5,1.32);
                     odo.resetPosAndIMU();
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
                     telemetry.update();
-                    setLinearSlide(20,0.5);
+
+                    setLinearSlide(30,0.5);
                     openClaw();
                     gotoX(37);
                     closeClaw();
                     driveByTime(0,1);
                     setLinearSlide(400,0.75);
                     gotoX(15);
-                    bestRotateByTime(0.2,0.1);
+                    bestRotateByTime(.175,0.04);
                     setLinearSlide(2080,0.75);
                     setArm(.75,.62);
-                    driveByTime(0,2);
-
+                    driveByTime(0,1);
                     driveByTime(-.25,3);
-                    setArm(.75,.8);
-                    driveByTime(.15,.2);
+                    //setArm(.75,0.45);
+                    //driveByTime(.1,.1);
+                    setLinearSlide(1800,.75);
                     openClaw();
-                    driveByTime(0,0.2);//Sample dropped
+                    driveByTime(0,0.15);//Sample dropped
                     //get to park
-                    driveByTime(.25,.125);
+                    driveByTime(.2,.1);
                     driveByTime(0,0);
-                    setLinearSlide(20,.6);
+                    setLinearSlide(20,.8);
                     setArm(0.55,1.0);
-                    strafeByTime(0.5,0.75);
-                    driveByTime(.5,.375);
-                    driveByTime(0,30);
+                    strafeByTime(0.5,1);
+                    driveByTime(.5,.6);
+                    //driveByTime(0,30);
                     bestRotateByTime(-0.1,0.1);
-
-
-
                     driveByTime(.5,0.75);
                     bestRotateByTime(0.4,0.1);
                     setArm(0.55,1.0);
-                    driveByTime(0.1,3);
+                    driveByTime(0.2 ,3);
                     setLinearSlide(0,0.3);
+                    setArm(0.3,1.0);
 
 
                     telemetry.addData("final: ", "%.2f %.2f %.2f ", getODOx(),getODOy(),getHeading());
