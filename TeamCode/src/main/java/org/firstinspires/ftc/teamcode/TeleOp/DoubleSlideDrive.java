@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +17,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 @TeleOp(name = "DoubleSlideDrive", group = "DoubleSlideDrive")
 
 public class DoubleSlideDrive extends LinearOpMode {
+    double moveSlide = 0;
+    double moveHang = 0;
 
     // Encoder value for the top position
     private static final int SLIDE_TOP_POSITION = 2088;
@@ -37,10 +38,10 @@ public class DoubleSlideDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
-        Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
+        Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
+        Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
 
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -69,9 +70,7 @@ public class DoubleSlideDrive extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.UP));
         imu.initialize(parameters);
 
-        while (!isStarted()) {
-
-        }
+        waitForStart();
 
         while (opModeIsActive()) {
             double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
@@ -92,7 +91,7 @@ public class DoubleSlideDrive extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rot = gamepad1.right_stick_x;
 
-            boolean slowDown = gamepad1.right_bumper > 0.1;
+            boolean slowDown = gamepad1.right_bumper || gamepad1.right_trigger > 0.1;
 
             if (gamepad1.dpad_up) {
                 imu.resetYaw();
@@ -126,6 +125,17 @@ public class DoubleSlideDrive extends LinearOpMode {
             telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
             telemetry.update();
         }
+    }
+
+    private void setShoulder(double target) {
+        Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
+        Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
+        leftShoulder.setPosition(target);
+        rightShoulder.setPosition(1.0 - target);
+    }
+
+    private void setArm(double shoulder) {
+        setShoulder(shoulder);
     }
 
     private boolean bothSlidesBelowLimit(DcMotor leftSlide, DcMotor rightSlide, int limit) {
