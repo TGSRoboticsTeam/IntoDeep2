@@ -6,18 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 @TeleOp(name = "DoubleSlideDrive", group = "DoubleSlideDrive")
 public class DoubleSlideDrive extends LinearOpMode {
-    double moveSlide = 0;
-    double moveHang = 0;
 
-    // Encoder value for the top position
     private static final int SLIDE_TOP_POSITION = 2088;
 
     @Override
@@ -37,6 +29,8 @@ public class DoubleSlideDrive extends LinearOpMode {
 
         Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
         Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
+        Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
+        Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
 
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -54,11 +48,10 @@ public class DoubleSlideDrive extends LinearOpMode {
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         double changeInSpeed = 0.35;
+        boolean grabberClosed = false;
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        IMU.Parameters parameters = new IMU.Parameters();
         imu.initialize(parameters);
 
         waitForStart();
@@ -111,28 +104,41 @@ public class DoubleSlideDrive extends LinearOpMode {
             rightFrontDrive.setPower(frontRightPower);
             rightBackDrive.setPower(backRightPower);
 
-            // Handle D-Pad inputs for shoulder positions
+            // Handle D-Pad inputs for shoulder and wrist positions
             if (gamepad1.dpad_down) {
-                setShoulderPosition(leftShoulder, rightShoulder, 5.0 / 270.0);
+                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.8, 0.9);
             } else if (gamepad1.dpad_left) {
-                setShoulderPosition(leftShoulder, rightShoulder, 30.0 / 270.0);
+                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1.0, 0.7);
             } else if (gamepad1.dpad_up) {
-                setShoulderPosition(leftShoulder, rightShoulder, 135.0 / 270.0);
+                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.55, 1.0);
             } else if (gamepad1.dpad_right) {
-                setShoulderPosition(leftShoulder, rightShoulder, 1.0);
+                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0.5);
+            }
+
+            // Handle grabber toggle
+            if (gamepad1.a) {
+                if (grabberClosed) {
+                    grabber.setPosition(0.5); // Open position
+                } else {
+                    grabber.setPosition(1.0); // Closed position
+                }
+                grabberClosed = !grabberClosed;
             }
 
             telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
             telemetry.addData("Left Shoulder Position", leftShoulder.getPosition());
             telemetry.addData("Right Shoulder Position", rightShoulder.getPosition());
+            telemetry.addData("Wrist Position", wristServo.getPosition());
+            telemetry.addData("Grabber Position", grabber.getPosition());
             telemetry.update();
         }
     }
 
-    private void setShoulderPosition(Servo leftShoulder, Servo rightShoulder, double position) {
-        leftShoulder.setPosition(position);
-        rightShoulder.setPosition(1.0 - position);
+    private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
+        leftShoulder.setPosition(shoulderPosition);
+        rightShoulder.setPosition(1.0 - shoulderPosition);
+        wristServo.setPosition(wristPosition);
     }
 
     private boolean bothSlidesAboveLimit(DcMotor leftSlide, DcMotor rightSlide, int limit) {
