@@ -1,12 +1,19 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 @TeleOp(name = "DoubleSlideDrive", group = "DoubleSlideDrive")
 public class DoubleSlideDrive extends LinearOpMode {
 
@@ -50,8 +57,13 @@ public class DoubleSlideDrive extends LinearOpMode {
         double changeInSpeed = 0.35;
         boolean grabberClosed = false;
 
+        // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters();
+        // Adjust the orientation parameters to match your robot
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT, // Change to left if doesn't work
+                RevHubOrientationOnRobot.UsbFacingDirection.UP));
+        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
 
         waitForStart();
@@ -115,14 +127,18 @@ public class DoubleSlideDrive extends LinearOpMode {
                 setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0.5);
             }
 
-            // Handle grabber toggle
+            // Handle grabber open/close
             if (gamepad1.a) {
-                if (grabberClosed) {
-                    grabber.setPosition(0.5); // Open position
-                } else {
-                    grabber.setPosition(1.0); // Closed position
-                }
-                grabberClosed = !grabberClosed;
+                grabber.setPosition(0.5); // Open position
+                grabberClosed = false;
+            } else if (gamepad1.b) {
+                grabber.setPosition(1.0); // Closed position
+                grabberClosed = true;
+            } else {
+                grabber.setPosition(1.0); // Closed position
+            }
+            grabberClosed = !grabberClosed;
+        }
             }
 
             telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
