@@ -118,7 +118,7 @@ public class DoubleSlideDrive extends LinearOpMode {
 
             // Handle D-Pad inputs for shoulder and wrist positions
             if (gamepad1.dpad_down) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.8, 0.9);
+                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.3, 0.9);
             } else if (gamepad1.dpad_left) {
                 setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1.0, 0.7);
             } else if (gamepad1.dpad_up) {
