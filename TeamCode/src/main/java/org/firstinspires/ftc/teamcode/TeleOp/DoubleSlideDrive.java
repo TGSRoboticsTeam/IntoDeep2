@@ -17,8 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 @TeleOp(name = "DoubleSlideDrive", group = "DoubleSlideDrive")
 public class DoubleSlideDrive extends LinearOpMode {
 
-    private static final int SLIDE_TOP_POSITION = 2088;
-
     @Override
     public void runOpMode() {
 
@@ -69,12 +67,13 @@ public class DoubleSlideDrive extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            //int SLIDE_TOP_POSITION = 2088; // const
             double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
 
             if (moveSlide > 0) {
                 leftLinearSlide.setPower(moveSlide);
                 rightLinearSlide.setPower(moveSlide);
-            } else if (moveSlide < 0 && bothSlidesAboveLimit(leftLinearSlide, rightLinearSlide, 0)) {
+            } else if (moveSlide < 0 && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
                 leftLinearSlide.setPower(moveSlide);
                 rightLinearSlide.setPower(moveSlide);
             } else {
@@ -150,15 +149,9 @@ public class DoubleSlideDrive extends LinearOpMode {
             telemetry.update();
         }
 
-
-
     private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
         leftShoulder.setPosition(shoulderPosition);
         rightShoulder.setPosition(1.0 - shoulderPosition);
         wristServo.setPosition(wristPosition);
-    }
-
-    private boolean bothSlidesAboveLimit(DcMotor leftSlide, DcMotor rightSlide, int limit) {
-        return leftSlide.getCurrentPosition() > limit && rightSlide.getCurrentPosition() > limit;
     }
 }
