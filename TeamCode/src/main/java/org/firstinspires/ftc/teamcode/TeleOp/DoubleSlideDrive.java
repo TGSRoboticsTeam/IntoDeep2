@@ -139,7 +139,7 @@ public class DoubleSlideDrive extends LinearOpMode {
             }
             grabberClosed = !grabberClosed;
         }
-            }
+
 
             telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
@@ -149,7 +149,8 @@ public class DoubleSlideDrive extends LinearOpMode {
             telemetry.addData("Grabber Position", grabber.getPosition());
             telemetry.update();
         }
-    }
+
+
 
     private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
         leftShoulder.setPosition(shoulderPosition);
