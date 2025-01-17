@@ -134,9 +134,9 @@ public class DoubleSlideDrive extends LinearOpMode {
             } else if (gamepad1.b) {
                 grabber.setPosition(1.0); // Closed position
                 grabberClosed = true;
-            } else {
-                grabber.setPosition(1.0); // Closed position
-            }
+            }// else {
+//                grabber.setPosition(1.0); // Closed position
+//            }
             grabberClosed = !grabberClosed;
         }
 
