@@ -1,21 +1,17 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-@TeleOp(name = "DoubleSlideDrive", group = "DoubleSlideDrive")
-public class DoubleSlideDrive extends LinearOpMode {
+
+@TeleOp(name = "DSDrive", group = "DSDrive") // D.S Drive = Double Slide Drive
+public class DSDrive extends LinearOpMode {
 
     @Override
     public void runOpMode() {
@@ -68,7 +64,7 @@ public class DoubleSlideDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             //int SLIDE_TOP_POSITION = 2088; // const
-            double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
+            double moveSlide = gamepad2.right_trigger - gamepad2.left_trigger;
 
             if (moveSlide > 0) {
                 leftLinearSlide.setPower(moveSlide);
@@ -116,21 +112,21 @@ public class DoubleSlideDrive extends LinearOpMode {
             rightBackDrive.setPower(backRightPower);
 
             // Handle D-Pad inputs for shoulder and wrist positions
-            if (gamepad1.dpad_down) {
+            if (gamepad2.dpad_down) {
                 setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.3, 0.9);
-            } else if (gamepad1.dpad_left) {
+            } else if (gamepad2.dpad_left) {
                 setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1.0, 0.7);
-            } else if (gamepad1.dpad_up) {
+            } else if (gamepad2.dpad_up) {
                 setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.55, 1.0);
-            } else if (gamepad1.dpad_right) {
+            } else if (gamepad2.dpad_right) {
                 setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0.5);
             }
 
             // Handle grabber open/close
-            if (gamepad1.a) {
+            if (gamepad2.a) {
                 grabber.setPosition(0.5); // Open position
                 grabberClosed = false;
-            } else if (gamepad1.b) {
+            } else if (gamepad2.b) {
                 grabber.setPosition(1.0); // Closed position
                 grabberClosed = true;
             }// else {
@@ -140,14 +136,14 @@ public class DoubleSlideDrive extends LinearOpMode {
         }
 
 
-            telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
-            telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
-            telemetry.addData("Left Shoulder Position", leftShoulder.getPosition());
-            telemetry.addData("Right Shoulder Position", rightShoulder.getPosition());
-            telemetry.addData("Wrist Position", wristServo.getPosition());
-            telemetry.addData("Grabber Position", grabber.getPosition());
-            telemetry.update();
-        }
+        telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
+        telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
+        telemetry.addData("Left Shoulder Position", leftShoulder.getPosition());
+        telemetry.addData("Right Shoulder Position", rightShoulder.getPosition());
+        telemetry.addData("Wrist Position", wristServo.getPosition());
+        telemetry.addData("Grabber Position", grabber.getPosition());
+        telemetry.update();
+    }
 
     private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
         leftShoulder.setPosition(shoulderPosition);
