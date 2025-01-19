@@ -113,13 +113,25 @@ public class DSDrive extends LinearOpMode {
 
             // Handle D-Pad inputs for shoulder and wrist positions
             if (gamepad2.dpad_down) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.3, 0.9);
+                //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.3, 0.9);
+                leftShoulder.setPosition(0.3);
+                rightShoulder.setPosition(1.0 - 0.3);
+                wristServo.setPosition(0.9);
             } else if (gamepad2.dpad_left) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1.0, 0.7);
+                //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1.0, 0.7);
+                leftShoulder.setPosition(1.0);
+                rightShoulder.setPosition(1.0 - 1.0);
+                wristServo.setPosition(0.7);
             } else if (gamepad2.dpad_up) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.55, 1.0);
+                //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.55, 1.0);
+                leftShoulder.setPosition(0.55);
+                rightShoulder.setPosition(1.0 - 0.55);
+                wristServo.setPosition(1.0);
             } else if (gamepad2.dpad_right) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0.5);
+                //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0.5);
+                leftShoulder.setPosition(0);
+                rightShoulder.setPosition(1.0 - 0);
+                wristServo.setPosition(0.5);
             }
 
             // Handle grabber open/close
@@ -145,9 +157,9 @@ public class DSDrive extends LinearOpMode {
         telemetry.update();
     }
 
-    private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
-        leftShoulder.setPosition(shoulderPosition);
-        rightShoulder.setPosition(1.0 - shoulderPosition);
-        wristServo.setPosition(wristPosition);
-    }
+//    private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
+//        leftShoulder.setPosition(shoulderPosition);
+//        rightShoulder.setPosition(1.0 - shoulderPosition);
+//        wristServo.setPosition(wristPosition);
+//    }
 }
