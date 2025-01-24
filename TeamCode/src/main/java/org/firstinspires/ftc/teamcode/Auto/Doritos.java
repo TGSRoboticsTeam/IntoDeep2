@@ -164,6 +164,9 @@
 
              runtime.reset();
              while (runtime.seconds() < 30) {
+                 driveInches(36);
+                 driveByTime(0,4);
+             }
                  gogogo();
                  strafeByCamera(-68);
                  rotate90(-1);
@@ -200,8 +203,40 @@
 */
 
 
-             }
+           //  }
          }
+     }
+     // Method to drive the robot forward by a specified distance (in inches) with slowdown
+     public void driveInches(double targetDistance) {
+         // Reset encoders
+         odo.update();
+         double currentY = getODOy();
+
+
+
+         // Use a PID controller or other control mechanism to drive to the target distance
+         // This example uses a simple proportional control with a slowdown factor
+         while (getDistance(currentY) < targetDistance && opModeIsActive()) {
+             double remainingDistance = targetDistance - getDistance();
+             double power = 0.5 * (remainingDistance / targetDistance); // Proportional control with slowdown
+
+             // Ensure minimum power to avoid stalling
+             if (power < 0.1) {
+                 power = 0.1;
+             }
+
+             setMotorPowers(power, power, power, power); // Drive forward
+         }
+
+         setMotorPowers(0, 0, 0, 0); // Stop the robot
+     }
+     public void getDistance(double initialPos){
+         odo.update();
+         double currentPos = getODOy();
+         double distance = currentPos - initialPos;
+         telemetry.addData("Distance", "%.2f", distance);
+         telemetry.update();
+
      }
 
      public void rotate90(int direction){
