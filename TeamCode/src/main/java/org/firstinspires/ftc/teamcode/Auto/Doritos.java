@@ -87,7 +87,8 @@
      private DcMotor leftBackDrive = null;
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
-     private Servo armServo = null;
+     private Servo rightShoulder = null;
+     private Servo leftShoulder = null;
      private Servo wristServo = null;
      private Servo grabber = null;
      private DcMotor linearSlide = null;
@@ -130,6 +131,10 @@
          rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
          rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
+         Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
+         Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
+         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
+         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
 
          leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
          leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -163,36 +168,36 @@
 
              runtime.reset();
              while (runtime.seconds() < 30) {
+                 //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0);
                  driveInches(24);
+                 //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1, 0);
+                 driveByTime(0,2);
                  headingCorrection(0);
                  rotate90(-1); //look right
                  headingCorrection(-90);
+                 driveByTime(0,.5);
                  odo.resetPosAndIMU();
                  odo.update();
-                 //driveInches(4); //go right
-                 odoMoveX(12);
-                 driveByTime(0,2);
+                 odoMoveX(16);
                  odo.update();
                  headingCorrection(0);
-                 //telemetry print heading
-                 telemetry.addData("Heading", "%.2f", getHeading());
-                 telemetry.update();
-
+                 rotate90(1); //look forward
+                 headingCorrection(90);
+                 driveByTime(0,.5);
                  odo.resetPosAndIMU();
-                 driveByTime(0,2);
-                 //telemetry read heading x and y pos
-                 telemetry.addData("Heading", "%.2f", getHeading());
-                 telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
-                 telemetry.update();
-                 driveByTime(0,5);
-                 odoMoveX(12);
-                 driveInches(7);
-                 driveByTime(0, 2);
-                 odoMoveY(3);
-                 driveByTime(0,2);
-                 odoMoveX(-25);
-
-                 //strafe then heading zero
+                 odo.update();
+                 driveInches(2.5);
+                 odoMoveY(10);
+                 driveByTime(-.5,2);
+                 driveByTime(0,.8);
+                 odo.resetPosAndIMU();
+                 odo.update();
+                 odoMoveX(50);
+                 odoMoveY(10);
+                 driveByTime(-.5,2);
+                 odoMoveX(50);
+                 odoMoveY(10);
+                 driveByTime(-.5,2);
              }
              /**
               gogogo();
@@ -233,6 +238,39 @@
 
              //  }
          }
+     }
+
+     public void mirror() {
+         //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0);
+         driveInches(24);
+         //setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1, 0);
+         driveByTime(0,2);
+         headingCorrection(0);
+         rotate90(1); //look right
+         headingCorrection(90);
+         driveByTime(0,.5);
+         odo.resetPosAndIMU();
+         odo.update();
+         odoMoveX(16);
+         odo.update();
+         headingCorrection(0);
+         rotate90(-1); //look forward
+         headingCorrection(-90);
+         driveByTime(0,.5);
+         odo.resetPosAndIMU();
+         odo.update();
+         driveInches(2.5);
+         odoMoveY(-10);
+         driveByTime(-.5,2);
+         driveByTime(0,.8);
+         odo.resetPosAndIMU();
+         odo.update();
+         odoMoveX(50);
+         odoMoveY(-10);
+         driveByTime(-.5,2);
+         odoMoveX(50);
+         odoMoveY(-10);
+         driveByTime(-.5,2);
      }
 
      // Method to drive the robot forward by a specified distance (in inches) with slowdown
@@ -466,11 +504,6 @@
          //linearSlide.setPower(0);
      }
 
-     public void setArm(double arm, double wrist) {
-         armServo.setPosition(arm);
-         wristServo.setPosition(wrist);
-     }
-
 
      public void gotoX(double targetX) {
          odo.update();
@@ -483,6 +516,12 @@
          odo.update();
          double currentY = getODOy();
          odoMoveY(targetY - currentY);
+     }
+
+     private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
+         leftShoulder.setPosition(shoulderPosition);
+         rightShoulder.setPosition(1.0 - shoulderPosition);
+         wristServo.setPosition(wristPosition);
      }
 
      public void slidesToTop() {
@@ -501,10 +540,6 @@
          setLinearSlide(0, .5);
      }
 
-     public void unfold() {
-         closeClaw();
-         setArm(0.01, 0.56);
-     }
 
 
      //Routine for placing a specimein if it is already in the claw and you are at the bar
@@ -741,7 +776,7 @@
      }
 
      public void odoMoveX(double distanceX) {
-         double power = .25;
+         double power = .4;
          odo.update();
 
          double startX = getODOx();
