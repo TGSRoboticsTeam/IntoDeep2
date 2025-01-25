@@ -32,7 +32,7 @@ public class ArmProgramming extends LinearOpMode {
         String position = "null";
         while (opModeIsActive()) {
 
-            double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
+            double moveSlide = -gamepad1.left_stick_y; //gamepad1.right_trigger - gamepad1.left_trigger;
 
             if (moveSlide > 0) {
                 leftLinearSlide.setPower(moveSlide);
@@ -50,10 +50,12 @@ public class ArmProgramming extends LinearOpMode {
                 leftShoulder.setPosition(0);
                 rightShoulder.setPosition(0);
                 wristServo.setPosition(0);
+                position = "ZERO";
             } else if (gamepad1.b) {
                 leftShoulder.setPosition(1);
                 rightShoulder.setPosition(1);
                 wristServo.setPosition(1);
+                position = "ONE";
             }
         }
 
