@@ -95,6 +95,7 @@
      private GoBildaPinpointDriver odo = null;
      private double heading;
      double adjustment = 0.7;
+     double odoConversion = 23.49;
 
      private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -122,14 +123,12 @@
          Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
 
-
          // Initialize the hardware variables. Note that the strings used here must correspond
          // to the names assigned during the robot configuration step on the DS or RC devices.
          leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
          leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
          rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
          rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
-
 
 
          leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -164,78 +163,153 @@
 
              runtime.reset();
              while (runtime.seconds() < 30) {
-                 driveInches(36);
-                 driveByTime(0,4);
-             }
-                 gogogo();
-                 strafeByCamera(-68);
-                 rotate90(-1);
-                 odoMoveY(20);
-                 driveByTime(0, 2);
-                 telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
-                 telemetry.update();
-                 rotate(90.0);
-                 driveByTime(0, 2);
-                 telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
-                 telemetry.update();
-
-                 odoMoveX(30);
-                 driveByTime(0, 2);
-
-                 //strafeByCamera(-50);
-               /*  placeSpecimen();
-                 odoMoveY(-10);
-                 while(aprilTag.getDetections().size()==0){
-                     //headingCorrection(0);
-                     visionPortal.resumeStreaming();
-                    // driveByTime(0,10);
-
-                 }
+                 driveInches(24);
+                 headingCorrection(0);
+                 rotate90(-1); //look right
+                 headingCorrection(-90);
+                 odo.resetPosAndIMU();
+                 odo.update();
+                 //driveInches(4); //go right
+                 odoMoveX(12);
                  driveByTime(0,2);
-                 AprilTagDetection detection = aprilTag.getDetections().get(0);
-                 telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
-                         detection.robotPose.getPosition().x,
-                         detection.robotPose.getPosition().y,
-                         detection.robotPose.getPosition().z));
+                 odo.update();
+                 headingCorrection(0);
+                 //telemetry print heading
+                 telemetry.addData("Heading", "%.2f", getHeading());
                  telemetry.update();
-                 driveByTime(0,20);
 
-*/
+                 odo.resetPosAndIMU();
+                 driveByTime(0,2);
+                 //telemetry read heading x and y pos
+                 telemetry.addData("Heading", "%.2f", getHeading());
+                 telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
+                 telemetry.update();
+                 driveByTime(0,5);
+                 odoMoveX(12);
+                 driveInches(7);
+                 driveByTime(0, 2);
+                 odoMoveY(3);
+                 driveByTime(0,2);
+                 odoMoveX(-25);
+
+                 //strafe then heading zero
+             }
+             /**
+              gogogo();
+              strafeByCamera(-68);
+              rotate90(-1);
+              odoMoveY(20);
+              driveByTime(0, 2);
+              telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
+              telemetry.update();
+              rotate(90.0);
+              driveByTime(0, 2);
+              telemetry.addData("ODO yx:Move", "%.2f, %.2f ", getODOx(), getODOy());
+              telemetry.update();
+
+              odoMoveX(30);
+              driveByTime(0, 2);
+
+              //strafeByCamera(-50);
+              /*  placeSpecimen();
+              odoMoveY(-10);
+              while(aprilTag.getDetections().size()==0){
+              //headingCorrection(0);
+              visionPortal.resumeStreaming();
+              // driveByTime(0,10);
+
+              }
+              driveByTime(0,2);
+              AprilTagDetection detection = aprilTag.getDetections().get(0);
+              telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+              detection.robotPose.getPosition().x,
+              detection.robotPose.getPosition().y,
+              detection.robotPose.getPosition().z));
+              telemetry.update();
+              driveByTime(0,20);
+
+              */
 
 
-           //  }
+             //  }
          }
      }
+
      // Method to drive the robot forward by a specified distance (in inches) with slowdown
      public void driveInches(double targetDistance) {
          // Reset encoders
          odo.update();
-         double currentY = getODOy();
-
+         double currentY = getODOx();
 
 
          // Use a PID controller or other control mechanism to drive to the target distance
          // This example uses a simple proportional control with a slowdown factor
          while (getDistance(currentY) < targetDistance && opModeIsActive()) {
-             double remainingDistance = targetDistance - getDistance();
-             double power = 0.5 * (remainingDistance / targetDistance); // Proportional control with slowdown
-
+             odo.update();
+             double remainingDistance = targetDistance - getDistance(currentY);
+             double power = 0.35 * (remainingDistance / targetDistance); // Proportional control with slowdown
+             telemetry.addData("Remaining", "%.2f", remainingDistance);
+             telemetry.addData("Current ODO", "%.2f", getODOx());
+             telemetry.addData("target", "%.2f", targetDistance);
+             telemetry.update();
              // Ensure minimum power to avoid stalling
              if (power < 0.1) {
                  power = 0.1;
              }
+             if(power>.4){
+                 power = .4;
+             }
+             ;
 
              setMotorPowers(power, power, power, power); // Drive forward
+
+
          }
 
          setMotorPowers(0, 0, 0, 0); // Stop the robot
+
      }
-     public void getDistance(double initialPos){
+/*
+     public void strafeInches(double targetDistance) {
+         // Reset encoders
          odo.update();
-         double currentPos = getODOy();
+         double currentX = getODOy();
+
+
+         // Use a PID controller or other control mechanism to drive to the target distance
+         // This example uses a simple proportional control with a slowdown factor
+         while (getDistance(currentX) < targetDistance && opModeIsActive()) {
+             double remainingDistance = targetDistance - getDistance(currentX);
+             double power = 0.35 * (remainingDistance / targetDistance); // Proportional control with slowdown
+             telemetry.addData("Remaining", "%.2f", remainingDistance);
+             telemetry.addData("Current ODO", "%.2f", getODOy());
+             telemetry.addData("target", "%.2f", targetDistance);
+             telemetry.update();
+             // Ensure minimum power to avoid stalling
+             if (power < 0.1) {
+                 power = 0.1;
+             }
+             ;
+
+             setMotorPowers(power, -power, -power, power); // Drive side ?
+
+
+         }
+
+         setMotorPowers(0, 0, 0, 0); // Stop the robot
+
+     }
+*/
+
+     public double getDistance(double initialPos){
+         odo.update();
+         double currentPos = getODOx();
          double distance = currentPos - initialPos;
-         telemetry.addData("Distance", "%.2f", distance);
-         telemetry.update();
+        // telemetry.addData("DistanceTravelled", "%.2f", distance);
+        // telemetry.addData("Current Pos", "%.2f", currentPos);
+        // telemetry.addData("Initial Pos", "%.2f", initialPos);
+        // telemetry.update();
+         return distance;
 
      }
 
@@ -439,11 +513,11 @@
 
 
      public double getODOx() {
-         return odo.getPosX() / 19.89436789;
+         return odo.getPosX() / odoConversion;
      }
 
      public double getODOy() {
-         return odo.getPosY() / 19.89436789;
+         return odo.getPosY() / odoConversion;
      }
 
      public double getHeading() {
@@ -468,7 +542,6 @@
          odo.update();
          telemetry.addData("heading ", "%.2f", getHeading());
          telemetry.update();
-         driveByTime(0, 0);
          double power = .25;
          //ccw
          if (odo.getHeading() - radians < 0) {
