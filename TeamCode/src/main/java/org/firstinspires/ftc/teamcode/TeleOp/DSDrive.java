@@ -114,13 +114,18 @@ public class DSDrive extends LinearOpMode {
 
             // Handle D-Pad inputs for shoulder and wrist positions
             if (gamepad2.dpad_down) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.3, 0.9);
+                setToDegrees(shoulder,0);
+                setToDegrees(wristServo, 0);
             } else if (gamepad2.dpad_left) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 1.0, 0.7);
+                setToDegrees(shoulder,230);
+                setToDegrees(wristServo, 0);
             } else if (gamepad2.dpad_up) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0.55, 1.0);
-            } else if (gamepad2.dpad_right) {
-                setShoulderAndWristPositions(leftShoulder, rightShoulder, wristServo, 0, 0.5);
+                setToDegrees(shoulder,190);
+                setToDegrees(wristServo, 0);
+            }
+            else if (gamepad2.dpad_right) {
+                setToDegrees(shoulder,100);
+                setToDegrees(wristServo, 180);
             }
 
             // Handle grabber open/close
@@ -148,14 +153,13 @@ public class DSDrive extends LinearOpMode {
         panelClosed = !panelClosed;
     }
 
-        telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
-        telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
-        telemetry.addData("Left Shoulder Position", leftShoulder.getPosition());
-        telemetry.addData("Right Shoulder Position", rightShoulder.getPosition());
-        telemetry.addData("Wrist Position", wristServo.getPosition());
-        telemetry.addData("Grabber Position", grabber.getPosition());
-        telemetry.update();
-    }
+       // telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
+      //  telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
+       // telemetry.addData(" Shoulder Position", shoulder.getPosition());
+     //   telemetry.addData("Wrist Position", wristServo.getPosition());
+     //   telemetry.addData("Grabber Position", grabber.getPosition());
+    //    telemetry.update();
+    //}
 
     private void setToDegrees(Servo s,double degrees) {
     double temp = degrees / 300;

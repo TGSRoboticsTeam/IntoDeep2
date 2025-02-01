@@ -64,7 +64,7 @@
          Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
          Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
 
-         Servo panel = hardwareMap.get(Servo.class, "pushPanel")
+         Servo panel = hardwareMap.get(Servo.class, "pushPanel");
 
          leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
          leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
