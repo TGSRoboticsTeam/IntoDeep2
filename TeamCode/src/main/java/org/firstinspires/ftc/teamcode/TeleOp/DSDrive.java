@@ -28,8 +28,7 @@ public class DSDrive extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
-        Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
+        Servo shoulder = hardwareMap.get(Servo.class, "shoulder");
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
         Servo panel = hardwareMap.get(Servo.class, "pushPanel");
@@ -163,9 +162,8 @@ public class DSDrive extends LinearOpMode {
     s.setPosition(temp);
     }
 
-    private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
-        leftShoulder.setPosition(shoulderPosition);
-        rightShoulder.setPosition(1.0 - shoulderPosition);
+    private void setShoulderAndWristPositions(Servo shoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
+        shoulder.setPosition(shoulderPosition);
         wristServo.setPosition(wristPosition);
     }
 }

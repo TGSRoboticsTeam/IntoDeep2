@@ -29,8 +29,7 @@
      private DcMotor leftBackDrive = null;
      private DcMotor rightFrontDrive = null;
      private DcMotor rightBackDrive = null;
-     private Servo rightShoulder = null;
-     private Servo leftShoulder = null;
+     private Servo shoulder = null;
      private Servo wristServo = null;
      private Servo grabber = null;
      private Servo panel = null;
@@ -61,8 +60,7 @@
          rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
          rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
 
-         Servo leftShoulder = hardwareMap.get(Servo.class, "left_shoulder");
-         Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
+         Servo shoulder = hardwareMap.get(Servo.class, "shoulder");
          Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
          Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
 
@@ -311,9 +309,8 @@
          odoMoveY(targetY - currentY);
      }
 
-     private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
-         leftShoulder.setPosition(shoulderPosition);
-         rightShoulder.setPosition(1.0 - shoulderPosition);
+     private void setShoulderAndWristPositions(Servo shoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
+         shoulder.setPosition(shoulderPosition);
          wristServo.setPosition(wristPosition);
      }
 
