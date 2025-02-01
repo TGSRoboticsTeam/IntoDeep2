@@ -32,6 +32,7 @@ public class DSDrive extends LinearOpMode {
         Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
+        Servo panel = hardwareMap.get(Servo.class, "pushPanel");
 
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -50,6 +51,7 @@ public class DSDrive extends LinearOpMode {
 
         double changeInSpeed = 0.35;
         boolean grabberClosed = false;
+        boolean panelClosed = false;
 
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -135,6 +137,17 @@ public class DSDrive extends LinearOpMode {
             grabberClosed = !grabberClosed;
         }
 
+        if (gamepad1.a) {
+            panel.setPosition(0.5); // Open position
+            panelClosed = false;
+        } else if (gamepad1.b) {
+            panel.setPosition(1.0); // Closed position
+            panelClosed = true;
+        }// else {
+//                grabber.setPosition(1.0); // Closed position
+//            }
+        panelClosed = !panelClosed;
+    }
 
         telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
         telemetry.addData("Right Slide Encoder", rightLinearSlide.getCurrentPosition());
@@ -143,6 +156,11 @@ public class DSDrive extends LinearOpMode {
         telemetry.addData("Wrist Position", wristServo.getPosition());
         telemetry.addData("Grabber Position", grabber.getPosition());
         telemetry.update();
+    }
+
+    private void setToDegrees(Servo s,double degrees) {
+    double temp = degrees / 300;
+    s.setPosition(temp);
     }
 
     private void setShoulderAndWristPositions(Servo leftShoulder, Servo rightShoulder, Servo wristServo, double shoulderPosition, double wristPosition) {
