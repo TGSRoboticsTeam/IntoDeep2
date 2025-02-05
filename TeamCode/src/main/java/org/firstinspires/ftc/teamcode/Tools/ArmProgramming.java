@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.Tools;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "ArmProgramming", group = "ArmProgramming")
+@TeleOp(name = "xArmProgramming", group = "xArmProgramming")
 public class ArmProgramming extends LinearOpMode {
 
     @Override
@@ -29,7 +28,15 @@ public class ArmProgramming extends LinearOpMode {
         Servo rightShoulder = hardwareMap.get(Servo.class, "right_shoulder");
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
 
-        String position = "null";
+        boolean AJustPressed = false;
+        boolean BJustPressed = false;
+        float increment = 10;
+        Servo servo = wristServo; // THE SERVO AFFECTED!
+
+        telemetry.addData("Affecting ", servo.toString(), "!");
+        telemetry.addData("Waiting...");
+        telemetry.update();
+
         while (opModeIsActive()) {
 
             double moveSlide = -gamepad1.left_stick_y; //gamepad1.right_trigger - gamepad1.left_trigger;
@@ -47,19 +54,37 @@ public class ArmProgramming extends LinearOpMode {
 
             // Handle D-Pad inputs for shoulder and wrist positions
             if (gamepad1.a) {
-                leftShoulder.setPosition(0);
-                rightShoulder.setPosition(0);
-                wristServo.setPosition(0);
-                position = "ZERO";
-            } else if (gamepad1.b) {
-                leftShoulder.setPosition(1);
-                rightShoulder.setPosition(1);
-                wristServo.setPosition(1);
-                position = "ONE";
+                if (!AJustPressed) {
+                    setToDegrees(servo, returnDegrees(servo) + increment);
+                }
+                AJustPressed = true;
+            } else {
+                AJustPressed = false;
             }
+
+            if (gamepad1.b) {
+                if (!BJustPressed) {
+                    setToDegrees(servo, returnDegrees(servo) - increment);
+                }
+                BJustPressed = true;
+            } else {
+                BJustPressed = false;
+            }
+
         }
 
-        telemetry.addData("Left Slide Encoder", position);
+        telemetry.addData("Incrementing By: ", increment);
+        telemetry.addData("Degrees: ", returnDegrees(servo));
         telemetry.update();
     }
+
+    private void setToDegrees(Servo s,double degrees) {
+        double temp = degrees / 300;
+        s.setPosition(temp);
+    }
+
+    private double returnDegrees(Servo s) {
+        return s.getPosition() * 300;
+    }
+
 }
