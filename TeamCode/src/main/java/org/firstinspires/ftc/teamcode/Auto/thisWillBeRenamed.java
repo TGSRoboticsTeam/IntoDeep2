@@ -4,6 +4,7 @@
  import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  import com.qualcomm.robotcore.hardware.DcMotor;
+ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  import com.qualcomm.robotcore.hardware.Servo;
  import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -34,6 +35,9 @@
      private Servo grabber = null;
      private Servo panel = null;
      private DcMotor linearSlide = null;
+     private DcMotor rightLinearSlide = null;
+     private DcMotor leftLinearSlide = null;
+
      private GoBildaPinpointDriver odo = null;
      private double heading;
      double adjustment = 0.7;
@@ -59,6 +63,18 @@
          leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
          rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
          rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");
+
+         rightLinearSlide = hardwareMap.get(DcMotor.class, "right_slide");
+         rightLinearSlide.setDirection(DcMotorSimple.Direction.REVERSE);
+         rightLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         rightLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         rightLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+         leftLinearSlide = hardwareMap.get(DcMotor.class, "left_slide");
+         leftLinearSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+         leftLinearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         leftLinearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
          Servo shoulder = hardwareMap.get(Servo.class, "shoulder");
          Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
@@ -87,9 +103,10 @@
          while (opModeIsActive()) {
              odo.update();
              telemetryAprilTag();
-
-
-
+             //setToDegrees(shoulder,230);
+             driveByTime(0,1);
+             //setToDegrees(shoulder,190);
+             setLinearSlide(2000, 0.5);
          }
      }
 
@@ -128,6 +145,11 @@
 
      public void panelDown() {
          panel.setPosition(0);
+     }
+
+     private void setToDegrees(Servo s,double degrees) {
+         double temp = degrees / 300;
+         s.setPosition(temp);
      }
 
      public double getDistance(double initialPos){
@@ -273,22 +295,26 @@
 
   }
 */
-     public void setLinearSlide(int turnage, double speed) {
+     public void setLinearSlide(int turnage,double speed) {
          double ticks = 384.5;
          double newTarget = ticks / turnage;
-         linearSlide.setTargetPosition(turnage);
-         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         rightLinearSlide.setTargetPosition(turnage);
+         leftLinearSlide.setTargetPosition(turnage);
+         rightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+         leftLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-         linearSlide.setPower(speed);
+         rightLinearSlide.setPower(speed);
+         leftLinearSlide.setPower(speed);
 
          // Wait until the motor is no longer busy
-         while (linearSlide.isBusy()) {
+         while (leftLinearSlide.isBusy()) {
              // You can add a small delay here if needed
-             telemetry.addData("LS_busy: ", "%d ", linearSlide.getCurrentPosition());
-             telemetry.addData("LS_target: ", "%d ", linearSlide.getTargetPosition());
+             telemetry.addData("LS_busy: ", "%d ", leftLinearSlide.getCurrentPosition());
+             telemetry.addData("LS_target: ", "%d ", leftLinearSlide.getTargetPosition());
              telemetry.update();
          }
-         telemetry.addData("LS_Complete: ", "%d ", linearSlide.getCurrentPosition());
+
+         telemetry.addData("LS_Complete: ", "%d ", leftLinearSlide.getCurrentPosition());
          telemetry.update();
 
          // Optionally stop the motor after reaching the target

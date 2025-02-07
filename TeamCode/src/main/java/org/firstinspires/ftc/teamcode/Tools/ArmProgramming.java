@@ -34,7 +34,7 @@ public class ArmProgramming extends LinearOpMode {
         Servo servo = wristServo; // THE SERVO AFFECTED!
 
         telemetry.addData("Affecting ", servo.toString(), "!");
-        telemetry.addData("Waiting...");
+        //telemetry.addData("Waiting...");
         telemetry.update();
 
         while (opModeIsActive()) {
