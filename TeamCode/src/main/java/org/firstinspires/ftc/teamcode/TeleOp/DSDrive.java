@@ -31,7 +31,6 @@ public class DSDrive extends LinearOpMode {
         Servo shoulder = hardwareMap.get(Servo.class, "shoulder");
         Servo wristServo = hardwareMap.get(Servo.class, "wrist_servo");
         Servo grabber = hardwareMap.get(Servo.class, "grabber_servo");
-        Servo panel = hardwareMap.get(Servo.class, "pushPanel");
 
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
@@ -50,7 +49,6 @@ public class DSDrive extends LinearOpMode {
 
         double changeInSpeed = 0.35;
         boolean grabberClosed = false;
-        boolean panelClosed = false;
 
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -114,18 +112,18 @@ public class DSDrive extends LinearOpMode {
 
             // Handle D-Pad inputs for shoulder and wrist positions
             if (gamepad2.dpad_down) {
-                setToDegrees(shoulder,0);
-                setToDegrees(wristServo, 0);
+                setToDegrees(shoulder,5);
+                setToDegrees(wristServo, 215);
             } else if (gamepad2.dpad_left) {
                 setToDegrees(shoulder,230);
-                setToDegrees(wristServo, 0);
+                setToDegrees(wristServo, 300);
             } else if (gamepad2.dpad_up) {
                 setToDegrees(shoulder,190);
-                setToDegrees(wristServo, 0);
+                setToDegrees(wristServo, 250);
             }
             else if (gamepad2.dpad_right) {
                 setToDegrees(shoulder,100);
-                setToDegrees(wristServo, 180);
+                setToDegrees(wristServo, 215);
             }
 
             // Handle grabber open/close
@@ -141,16 +139,7 @@ public class DSDrive extends LinearOpMode {
             grabberClosed = !grabberClosed;
         }
 
-        if (gamepad1.a) {
-            panel.setPosition(0.5); // Open position
-            panelClosed = false;
-        } else if (gamepad1.b) {
-            panel.setPosition(1.0); // Closed position
-            panelClosed = true;
-        }// else {
-//                grabber.setPosition(1.0); // Closed position
-//            }
-        panelClosed = !panelClosed;
+
     }
 
        // telemetry.addData("Left Slide Encoder", leftLinearSlide.getCurrentPosition());
