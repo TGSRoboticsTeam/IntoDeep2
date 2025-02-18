@@ -64,6 +64,10 @@ public class AutomatedDSD extends LinearOpMode {
         double transferMode = 0;
         boolean justGrabbed = false;
         boolean clawGrab = false;
+
+        double changeDeg = 0.0; // Used for correcting gear skip
+        double gearCorrection = 0.0;
+
         double changeState = 0.0; // Used for position toggle
         int state = 0; // Used for position toggle */
 
@@ -134,10 +138,10 @@ public class AutomatedDSD extends LinearOpMode {
 
             if (transferMode == 1) {
                 setToDegrees(grabber, 150);
-                setToDegrees(shoulder, 110);
+                setToDegrees(shoulder, 110 + gearCorrection);
                 setToDegrees(wristServo, 240);
                 setToDegrees(extendoBase,150);
-                setToDegrees(extendoShoulder,60);
+                setToDegrees(extendoShoulder,60 + gearCorrection);
                 setToDegrees(extendoWrist, 90);
                 setRevToDegrees(grabberRotate, 90);
 
@@ -148,7 +152,7 @@ public class AutomatedDSD extends LinearOpMode {
                 setRevToDegrees(extendoGrabber, 270);
                 transferMode ++;
             } else if (transferMode == 3) {
-                setToDegrees(shoulder, 235);
+                setToDegrees(shoulder, 235 + gearCorrection);
                 setToDegrees(wristServo, 270);
                 setToDegrees(extendoWrist, 90);
                 transferMode = 0;
@@ -209,7 +213,6 @@ public class AutomatedDSD extends LinearOpMode {
             }
 
             boolean toggleClaw = gamepad2.right_bumper;
-            double clawPos = 1;
             if (toggleClaw && !clawGrab) {
                 clawGrab = true;
                 if (extendoGrabber.getPosition() == grabbingPos) {
@@ -221,6 +224,7 @@ public class AutomatedDSD extends LinearOpMode {
                 clawGrab = false;
             }
 
+            //*// Toggle arm
             if (gamepad1.left_bumper && changeState == 0.0) { // has not been pressed
                 changeState = 0.5; // just pressed = 0.5
             } else if (!gamepad1.left_bumper) {
@@ -231,12 +235,31 @@ public class AutomatedDSD extends LinearOpMode {
                 changeState = 1.0;
                 if (state == 0){
                     state = 1;
-                    setToDegrees(shoulder,235);
+                    setToDegrees(shoulder,235 + gearCorrection);
                     setRevToDegrees(wristServo, 270);
                 } else if (state == 1) {
                     state = 0;
-                    setToDegrees(shoulder, 125);
+                    setToDegrees(shoulder, 125 + gearCorrection);
                     setToDegrees(wristServo, 240);
+                }
+            }
+            //*/
+
+            //*// Change degrees
+            int incrementGearDeg = 10;
+
+            if ((gamepad1.dpad_up || gamepad1.dpad_down) && changeState == 0.0) { // has not been pressed
+                changeDeg = 0.5; // just pressed = 0.5
+            } else if (!(gamepad1.dpad_up || gamepad1.dpad_down)) {
+                changeDeg = 0.0; // not pressed = 0.0
+            }
+
+            if (changeDeg == 0.5) { // If just pressed
+                changeDeg = 1.0; // Set to has been pressed
+                if (gamepad1.dpad_up) {
+                    gearCorrection = incrementGearDeg;
+                } else if (gamepad1.dpad_down) {
+                    gearCorrection = -incrementGearDeg;
                 }
             }
             //*/
@@ -247,6 +270,7 @@ public class AutomatedDSD extends LinearOpMode {
 
     }
 
+    // Functions
     private double getDegrees(Servo s) {
         return s.getPosition() * 300;
     }
@@ -254,7 +278,6 @@ public class AutomatedDSD extends LinearOpMode {
         double temp = degrees / 270;
         s.setPosition(temp);
     }
-
     private void setToDegrees(Servo s,double degrees) {
         double temp = degrees / 300;
         s.setPosition(temp);
