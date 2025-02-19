@@ -1,4 +1,4 @@
-package TeleOp;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -60,18 +60,20 @@ public class AutomatedDSD extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        int pressNum = 0; //Used for extendo arm position toggle
-        double changeInSpeed = 0.35; // drive speed adjustment
-        boolean heldUp = false; // used to determine if extendo arm is out of the way
+        double changeInSpeed = 0.35; // drive speed multiplier
 
-        //double transferMode = 0;
-        int adjustment = 0; //For adjusting the main arm position if necessary
+        // Extendo vars
+        int pressNum = 0; // Used for extendo arm position toggle
+        boolean heldUp = false; // Used to determine if extendo arm is out of the way
+
+        // Linear slide vars
+        int linearSlideHeight = 0; // Has to be an int that's the only var-type setTargetPosition() takes
+
+        // Grabber and arm vars
         boolean justGrabbed = false;
-        boolean clawGrab = false;
-        boolean wristSet = false;
         double changeState = 0.0; // Used for position toggle
         int state = 0; // Used for position toggle */
-        int shoulderPos = 235;
+        //boolean clawGrab = false; // Used for toggle grabber
 
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -85,36 +87,15 @@ public class AutomatedDSD extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            //int SLIDE_TOP_POSITION = 2088; // const
-            double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
             double moveExtendo = - gamepad2.right_stick_y;
             double extendoSpeed = 0.75;
-            int pos = 0; // linear slide position
 
-//To manually move linear slides up and down with triggers
-            if (gamepad1.right_trigger > 0){
-                pos += 1;
-                setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
-            } else if (gamepad1.left_trigger > 0) {
-                pos += 1;
-            }
-            setLinearSlide(rightLinearSlide, leftLinearSlide, pos, 1);
-//attempt to initialize wrist servo on extendo
+            // Attempt to initialize wrist servo on extendo
             if (gamepad2.dpad_down){
                 extendoWrist.setPosition(1);
             }
-/*
-            if (moveSlide > 0) {
-                leftLinearSlide.setPower(moveSlide);
-                rightLinearSlide.setPower(moveSlide);
-            } else if (moveSlide < 0) {// && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
-                leftLinearSlide.setPower(moveSlide);
-                rightLinearSlide.setPower(moveSlide);
-            } else {
-                leftLinearSlide.setPower(0);
-                rightLinearSlide.setPower(0);
-            }
-*/             //Move extendo in and out
+
+            // Move extendo in/out
             if (moveExtendo > 0) {
                 extendo.setPower(extendoSpeed* moveExtendo);
             } else if (moveExtendo < 0) {// && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
@@ -123,6 +104,7 @@ public class AutomatedDSD extends LinearOpMode {
                 extendo.setPower(0);
                 //extendoGrabber.setPosition(1);
             }
+
             //rotate the extendo base
             double baseRotation = gamepad2.left_stick_x;
             double baseIncrement = 2;
@@ -131,6 +113,7 @@ public class AutomatedDSD extends LinearOpMode {
             }else if (baseRotation < 0) {
                 setToDegrees(extendoBase, getDegrees(extendoBase) - baseIncrement);
             }
+
             // Used to pull extendo arm up
             if (gamepad2.left_trigger > 0.5) {
                 heldUp = true;
@@ -146,7 +129,7 @@ public class AutomatedDSD extends LinearOpMode {
                 setToDegrees(extendoShoulder, 30);
             }
 
-            //Drive functions
+            // Drive vars
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rot = gamepad1.right_stick_x;
@@ -157,7 +140,7 @@ public class AutomatedDSD extends LinearOpMode {
                 imu.resetYaw();
             }
 
-/*
+            /*// TRANSFER
             if(gamepad1.x) {
                 transferMode += 1;
             }
@@ -183,10 +166,9 @@ public class AutomatedDSD extends LinearOpMode {
                 setToDegrees(extendoWrist, 90);
                 transferMode = 0;
             }
-*/
+            */
 
-
-
+            // DRIVE
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
             double strafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -248,10 +230,7 @@ public class AutomatedDSD extends LinearOpMode {
                 justGrabbed = false;
             }
 
-
-
-/*
-            boolean toggleClaw = gamepad2.right_bumper;
+            /*boolean toggleClaw = gamepad2.right_bumper;
             double clawPos = 1;
             if (toggleClaw && !clawGrab) {
                 clawGrab = true;
@@ -263,7 +242,9 @@ public class AutomatedDSD extends LinearOpMode {
             } else if (!toggleClaw) {
                 clawGrab = false;
             }
-*/      //Handle Extendo arm sequence
+            //*/
+
+            // Handle extendo arm sequence
             if(gamepad2.right_trigger > 0.5 && pressNum == 0){
                 pressNum = 1;
                 setToDegrees(extendoShoulder, 0);
@@ -278,50 +259,43 @@ public class AutomatedDSD extends LinearOpMode {
             } else if (!gamepad1.left_bumper) {
                 changeState = 0.0; // not pressed = 0.0
             }
-/*
-            if(gamepad1.dpad_up){
-                shoulderPos -= 5;
-            }
-
-            if(gamepad1.dpad_down){
-                shoulderPos += 5;
-            }
-*/      // Fix main arm pos
-            while(gamepad1.dpad_right){
-                adjustment = 5;
-            }
-            while(gamepad1.dpad_left){
-                adjustment = 0;
-            }
-            while(gamepad1.dpad_down){
-                adjustment = -5;
-            }
-
-
-            //Cues for main arm positions
-            if (changeState == 0.5) {
-                changeState = 1.0;
-                if (state == 0){
-                    state = 1;
-                    pos = 0;
-                    setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
-                    setToDegrees(shoulder,shoulderPos + adjustment);
-                    setRevToDegrees(wristServo, 270);
-                } else if (state == 1) {
-                    state = 2;
-                    pos = 850;
-                    setToDegrees(shoulder, 115);
-                    setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
-                    setToDegrees(wristServo, 240);
-                } else if (state == 2) {
-                    pos = 950;
-                    setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
-                    state = 0;
-                }
-            }
             //*/
 
-            telemetry.addData("adjustmet", adjustment);
+
+            // Linear slides
+            int slideHeightIncrement = 1;
+            double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
+            /* if (moveSlide > 0) {
+                leftLinearSlide.setPower(moveSlide);
+                rightLinearSlide.setPower(moveSlide);
+            } else if (moveSlide < 0) {// && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
+                leftLinearSlide.setPower(moveSlide);
+                rightLinearSlide.setPower(moveSlide);
+            } else {
+                leftLinearSlide.setPower(0);
+                rightLinearSlide.setPower(0);
+            }
+            //*/// Trigger based
+
+            // Position based
+            if (moveSlide > 0) {
+                linearSlideHeight += slideHeightIncrement;
+            } else if (moveSlide < 0) {// && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
+                linearSlideHeight -= slideHeightIncrement;
+            }
+
+            if (gamepad1.dpad_down) {
+                linearSlideHeight = 0;
+            } else if (gamepad1.dpad_right) {
+                linearSlideHeight = 850;
+            } else if (gamepad1.dpad_up) {
+                linearSlideHeight = 950;
+            }
+
+            setLinearSlide(rightLinearSlide, leftLinearSlide, linearSlideHeight, 1);
+
+            //*/
+
             telemetry.addData("Left Encoder", leftLinearSlide.getCurrentPosition());
             telemetry.addData("Right Encoder", rightLinearSlide.getCurrentPosition());
             telemetry.addData("Extendo Encoder", extendo.getCurrentPosition());
@@ -332,21 +306,24 @@ public class AutomatedDSD extends LinearOpMode {
 
 
     }
-    public void setLinearSlide(DcMotor rightLinearSlide, DcMotor leftLinearSlide, int turnage, double speed) {
+    public void setLinearSlide(DcMotor rightLinearSlide, DcMotor leftLinearSlide, int position, double speed) {
         double ticks = 384.5;
-        double newTarget = ticks / turnage;
-        rightLinearSlide.setTargetPosition(turnage);
-        leftLinearSlide.setTargetPosition(turnage);
+        double newTarget = ticks / position;
+        rightLinearSlide.setTargetPosition(position);
+        leftLinearSlide.setTargetPosition(position);
         rightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         rightLinearSlide.setPower(speed);
         leftLinearSlide.setPower(speed);
 
-        // Wait until the motor is no longer busy
+        /*// Wait until the motor is no longer busy
         while (leftLinearSlide.isBusy()) {
 
         }
+
+        rightLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
     }
     private double getDegrees(Servo s) {
         return s.getPosition() * 300;
