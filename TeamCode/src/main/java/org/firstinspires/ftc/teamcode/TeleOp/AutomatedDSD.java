@@ -60,12 +60,12 @@ public class AutomatedDSD extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        int pressNum = 0;
-        double changeInSpeed = 0.35;
-        boolean heldUp = false;
+        int pressNum = 0; //Used for extendo arm position toggle
+        double changeInSpeed = 0.35; // drive speed adjustment
+        boolean heldUp = false; // used to determine if extendo arm is out of the way
 
-        double transferMode = 0;
-        int adjustment = 0;
+        //double transferMode = 0;
+        int adjustment = 0; //For adjusting the main arm position if necessary
         boolean justGrabbed = false;
         boolean clawGrab = false;
         boolean wristSet = false;
@@ -89,9 +89,9 @@ public class AutomatedDSD extends LinearOpMode {
             double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
             double moveExtendo = - gamepad2.right_stick_y;
             double extendoSpeed = 0.75;
-            int pos = 0;
+            int pos = 0; // linear slide position
 
-
+//To manually move linear slides up and down with triggers
             if (gamepad1.right_trigger > 0){
                 pos += 1;
                 setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
@@ -99,9 +99,9 @@ public class AutomatedDSD extends LinearOpMode {
                 pos += 1;
             }
             setLinearSlide(rightLinearSlide, leftLinearSlide, pos, 1);
-
+//attempt to initialize wrist servo on extendo
             if (gamepad2.dpad_down){
-                wristServo.setPosition(1);
+                extendoWrist.setPosition(1);
             }
 /*
             if (moveSlide > 0) {
@@ -114,7 +114,7 @@ public class AutomatedDSD extends LinearOpMode {
                 leftLinearSlide.setPower(0);
                 rightLinearSlide.setPower(0);
             }
-*/
+*/             //Move extendo in and out
             if (moveExtendo > 0) {
                 extendo.setPower(extendoSpeed* moveExtendo);
             } else if (moveExtendo < 0) {// && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
@@ -123,7 +123,7 @@ public class AutomatedDSD extends LinearOpMode {
                 extendo.setPower(0);
                 //extendoGrabber.setPosition(1);
             }
-
+            //rotate the extendo base
             double baseRotation = gamepad2.left_stick_x;
             double baseIncrement = 2;
             if (baseRotation > 0) {
@@ -131,20 +131,22 @@ public class AutomatedDSD extends LinearOpMode {
             }else if (baseRotation < 0) {
                 setToDegrees(extendoBase, getDegrees(extendoBase) - baseIncrement);
             }
-
-            if (gamepad2.left_trigger > 0) {
-                heldUp = true;
-                setToDegrees(extendoShoulder,35);
-            } else if (gamepad2.left_trigger > 0.5) {
+            // Used to pull extendo arm up
+            if (gamepad2.left_trigger > 0.5) {
                 heldUp = true;
                 setToDegrees(extendoShoulder,85);
+            } else if (gamepad2.left_trigger > 0) {
+                heldUp = true;
+                setToDegrees(extendoShoulder,35);
             } else {
                 heldUp = false;
             }
-
+            // Makes extendo arm hover
             if(!heldUp && pressNum == 0){
                 setToDegrees(extendoShoulder, 30);
             }
+
+            //Drive functions
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rot = gamepad1.right_stick_x;
@@ -182,19 +184,7 @@ public class AutomatedDSD extends LinearOpMode {
                 transferMode = 0;
             }
 */
-            if (gamepad2.y){
-                setRevToDegrees(grabberRotate, 150);
-            }
-            if (gamepad2.x){
-                setRevToDegrees(grabberRotate, 95);
-            }
-            if (gamepad2.b){
-                setRevToDegrees(grabberRotate, 195);
-            }
 
-            if (gamepad2.a){
-                setRevToDegrees(grabberRotate, 240);
-            }
 
 
             double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -222,7 +212,21 @@ public class AutomatedDSD extends LinearOpMode {
             rightBackDrive.setPower(backRightPower);
 
 
-            // Handle grabber open/close
+            //Rotate the grabber on the extendo
+            if (gamepad2.y){
+                setRevToDegrees(grabberRotate, 150);
+            }
+            if (gamepad2.x){
+                setRevToDegrees(grabberRotate, 95);
+            }
+            if (gamepad2.b){
+                setRevToDegrees(grabberRotate, 195);
+            }
+
+            if (gamepad2.a){
+                setRevToDegrees(grabberRotate, 240);
+            }
+
             // Handle grabber open/close
             boolean toggleGrabber = gamepad1.right_bumper;
             double grabbingPos = 1;
@@ -259,7 +263,7 @@ public class AutomatedDSD extends LinearOpMode {
             } else if (!toggleClaw) {
                 clawGrab = false;
             }
-*/
+*/      //Handle Extendo arm sequence
             if(gamepad2.right_trigger > 0.5 && pressNum == 0){
                 pressNum = 1;
                 setToDegrees(extendoShoulder, 0);
@@ -282,7 +286,7 @@ public class AutomatedDSD extends LinearOpMode {
             if(gamepad1.dpad_down){
                 shoulderPos += 5;
             }
-*/
+*/      // Fix main arm pos
             while(gamepad1.dpad_right){
                 adjustment = 5;
             }
@@ -294,7 +298,7 @@ public class AutomatedDSD extends LinearOpMode {
             }
 
 
-
+            //Cues for main arm positions
             if (changeState == 0.5) {
                 changeState = 1.0;
                 if (state == 0){
