@@ -30,7 +30,7 @@ public class AutomatedDSD extends LinearOpMode {
         leftLinearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         DcMotor extendo = hardwareMap.get(DcMotor.class, "extendo");
-        extendo.setDirection(DcMotorSimple.Direction.REVERSE);
+        extendo.setDirection(DcMotorSimple.Direction.FORWARD);
         extendo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         extendo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         extendo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -60,16 +60,18 @@ public class AutomatedDSD extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        int pressNum = 0;
         double changeInSpeed = 0.35;
+        boolean heldUp = false;
+
         double transferMode = 0;
+        int adjustment = 0;
         boolean justGrabbed = false;
         boolean clawGrab = false;
-
-        double changeDeg = 0.0; // Used for correcting gear skip
-        double gearCorrection = 0.0;
-
+        boolean wristSet = false;
         double changeState = 0.0; // Used for position toggle
         int state = 0; // Used for position toggle */
+        int shoulderPos = 235;
 
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -85,9 +87,23 @@ public class AutomatedDSD extends LinearOpMode {
         while (opModeIsActive()) {
             //int SLIDE_TOP_POSITION = 2088; // const
             double moveSlide = gamepad1.right_trigger - gamepad1.left_trigger;
-            double moveExtendo = gamepad2.right_stick_y;
-            double extendoSpeed = 0.5;
+            double moveExtendo = - gamepad2.right_stick_y;
+            double extendoSpeed = 0.75;
+            int pos = 0;
 
+
+            if (gamepad1.right_trigger > 0){
+                pos += 1;
+                setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
+            } else if (gamepad1.left_trigger > 0) {
+                pos += 1;
+            }
+            setLinearSlide(rightLinearSlide, leftLinearSlide, pos, 1);
+
+            if (gamepad2.dpad_down){
+                wristServo.setPosition(1);
+            }
+/*
             if (moveSlide > 0) {
                 leftLinearSlide.setPower(moveSlide);
                 rightLinearSlide.setPower(moveSlide);
@@ -98,29 +114,37 @@ public class AutomatedDSD extends LinearOpMode {
                 leftLinearSlide.setPower(0);
                 rightLinearSlide.setPower(0);
             }
-
+*/
             if (moveExtendo > 0) {
                 extendo.setPower(extendoSpeed* moveExtendo);
             } else if (moveExtendo < 0) {// && (leftLinearSlide.getCurrentPosition() > 0 && rightLinearSlide.getCurrentPosition() > 0)) {
                 extendo.setPower(extendoSpeed * moveExtendo);
             } else {
                 extendo.setPower(0);
+                //extendoGrabber.setPosition(1);
             }
 
             double baseRotation = gamepad2.left_stick_x;
-            double baseIncrement = 1;
+            double baseIncrement = 2;
             if (baseRotation > 0) {
                 setToDegrees(extendoBase, getDegrees(extendoBase) + baseIncrement);
             }else if (baseRotation < 0) {
                 setToDegrees(extendoBase, getDegrees(extendoBase) - baseIncrement);
             }
 
-            if (gamepad2.left_trigger > 0.1 || gamepad2.left_bumper) {
-                setToDegrees(extendoShoulder,25);
-            }else if (transferMode == 0){
-                extendoShoulder.setPosition(10); // Down position
+            if (gamepad2.left_trigger > 0) {
+                heldUp = true;
+                setToDegrees(extendoShoulder,35);
+            } else if (gamepad2.left_trigger > 0.5) {
+                heldUp = true;
+                setToDegrees(extendoShoulder,85);
+            } else {
+                heldUp = false;
             }
 
+            if(!heldUp && pressNum == 0){
+                setToDegrees(extendoShoulder, 30);
+            }
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rot = gamepad1.right_stick_x;
@@ -131,17 +155,17 @@ public class AutomatedDSD extends LinearOpMode {
                 imu.resetYaw();
             }
 
-
+/*
             if(gamepad1.x) {
                 transferMode += 1;
             }
 
             if (transferMode == 1) {
                 setToDegrees(grabber, 150);
-                setToDegrees(shoulder, 110 + gearCorrection);
+                setToDegrees(shoulder, 110);
                 setToDegrees(wristServo, 240);
                 setToDegrees(extendoBase,150);
-                setToDegrees(extendoShoulder,60 + gearCorrection);
+                setToDegrees(extendoShoulder,60);
                 setToDegrees(extendoWrist, 90);
                 setRevToDegrees(grabberRotate, 90);
 
@@ -152,12 +176,12 @@ public class AutomatedDSD extends LinearOpMode {
                 setRevToDegrees(extendoGrabber, 270);
                 transferMode ++;
             } else if (transferMode == 3) {
-                setToDegrees(shoulder, 235 + gearCorrection);
+                setToDegrees(shoulder, 235);
                 setToDegrees(wristServo, 270);
                 setToDegrees(extendoWrist, 90);
                 transferMode = 0;
             }
-
+*/
             if (gamepad2.y){
                 setRevToDegrees(grabberRotate, 150);
             }
@@ -199,8 +223,16 @@ public class AutomatedDSD extends LinearOpMode {
 
 
             // Handle grabber open/close
+            // Handle grabber open/close
             boolean toggleGrabber = gamepad1.right_bumper;
             double grabbingPos = 1;
+
+            if (gamepad1.x && grabber.getPosition() == grabbingPos) {
+                toggleGrabber = true;
+            } else if (gamepad1.b && grabber.getPosition() != grabbingPos) {
+                toggleGrabber = true;
+            }
+
             if (toggleGrabber && !justGrabbed) {
                 justGrabbed = true;
                 if (grabber.getPosition() == grabbingPos) {
@@ -212,7 +244,11 @@ public class AutomatedDSD extends LinearOpMode {
                 justGrabbed = false;
             }
 
+
+
+/*
             boolean toggleClaw = gamepad2.right_bumper;
+            double clawPos = 1;
             if (toggleClaw && !clawGrab) {
                 clawGrab = true;
                 if (extendoGrabber.getPosition() == grabbingPos) {
@@ -220,57 +256,94 @@ public class AutomatedDSD extends LinearOpMode {
                 } else {
                     extendoGrabber.setPosition(grabbingPos);
                 }
-            } else if (!toggleGrabber) {
+            } else if (!toggleClaw) {
                 clawGrab = false;
             }
+*/
+            if(gamepad2.right_trigger > 0.5 && pressNum == 0){
+                pressNum = 1;
+                setToDegrees(extendoShoulder, 0);
+                setRevToDegrees(extendoGrabber, 270);
+            } else if (gamepad2.right_trigger > 0.5 && pressNum == 1) {
+                setRevToDegrees(extendoGrabber, 110);
+                pressNum = 0;
+            }
 
-            //*// Toggle arm
             if (gamepad1.left_bumper && changeState == 0.0) { // has not been pressed
                 changeState = 0.5; // just pressed = 0.5
             } else if (!gamepad1.left_bumper) {
                 changeState = 0.0; // not pressed = 0.0
             }
+/*
+            if(gamepad1.dpad_up){
+                shoulderPos -= 5;
+            }
+
+            if(gamepad1.dpad_down){
+                shoulderPos += 5;
+            }
+*/
+            while(gamepad1.dpad_right){
+                adjustment = 5;
+            }
+            while(gamepad1.dpad_left){
+                adjustment = 0;
+            }
+            while(gamepad1.dpad_down){
+                adjustment = -5;
+            }
+
+
 
             if (changeState == 0.5) {
                 changeState = 1.0;
                 if (state == 0){
                     state = 1;
-                    setToDegrees(shoulder,235 + gearCorrection);
+                    pos = 0;
+                    setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
+                    setToDegrees(shoulder,shoulderPos + adjustment);
                     setRevToDegrees(wristServo, 270);
                 } else if (state == 1) {
-                    state = 0;
-                    setToDegrees(shoulder, 125 + gearCorrection);
+                    state = 2;
+                    pos = 850;
+                    setToDegrees(shoulder, 115);
+                    setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
                     setToDegrees(wristServo, 240);
+                } else if (state == 2) {
+                    pos = 950;
+                    setLinearSlide(leftLinearSlide, rightLinearSlide, pos,1);
+                    state = 0;
                 }
             }
             //*/
 
-            //*// Change degrees
-            int incrementGearDeg = 10;
-
-            if ((gamepad1.dpad_up || gamepad1.dpad_down) && changeState == 0.0) { // has not been pressed
-                changeDeg = 0.5; // just pressed = 0.5
-            } else if (!(gamepad1.dpad_up || gamepad1.dpad_down)) {
-                changeDeg = 0.0; // not pressed = 0.0
-            }
-
-            if (changeDeg == 0.5) { // If just pressed
-                changeDeg = 1.0; // Set to has been pressed
-                if (gamepad1.dpad_up) {
-                    gearCorrection = incrementGearDeg;
-                } else if (gamepad1.dpad_down) {
-                    gearCorrection = -incrementGearDeg;
-                }
-            }
-            //*/
-
-            telemetry.addData("TransferMode", transferMode);
+            telemetry.addData("adjustmet", adjustment);
+            telemetry.addData("Left Encoder", leftLinearSlide.getCurrentPosition());
+            telemetry.addData("Right Encoder", rightLinearSlide.getCurrentPosition());
+            telemetry.addData("Extendo Encoder", extendo.getCurrentPosition());
+            telemetry.addData("Left Trigger", gamepad2.left_trigger);
+            telemetry.addData("state", state);
             telemetry.update();
         }
 
-    }
 
-    // Functions
+    }
+    public void setLinearSlide(DcMotor rightLinearSlide, DcMotor leftLinearSlide, int turnage, double speed) {
+        double ticks = 384.5;
+        double newTarget = ticks / turnage;
+        rightLinearSlide.setTargetPosition(turnage);
+        leftLinearSlide.setTargetPosition(turnage);
+        rightLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftLinearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        rightLinearSlide.setPower(speed);
+        leftLinearSlide.setPower(speed);
+
+        // Wait until the motor is no longer busy
+        while (leftLinearSlide.isBusy()) {
+
+        }
+    }
     private double getDegrees(Servo s) {
         return s.getPosition() * 300;
     }
@@ -278,10 +351,13 @@ public class AutomatedDSD extends LinearOpMode {
         double temp = degrees / 270;
         s.setPosition(temp);
     }
+
     private void setToDegrees(Servo s,double degrees) {
         double temp = degrees / 300;
         s.setPosition(temp);
     }
+
+
 
 
 }
